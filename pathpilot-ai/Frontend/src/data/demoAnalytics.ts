@@ -1,0 +1,95 @@
+import type { AnalyticsData } from '../types';
+
+export const DEMO_ANALYTICS: AnalyticsData = {
+  weeklyActivity: [
+    { day: 'Mon', hours: 1.5, lessons: 3 },
+    { day: 'Tue', hours: 2.0, lessons: 4 },
+    { day: 'Wed', hours: 0.5, lessons: 1 },
+    { day: 'Thu', hours: 2.5, lessons: 5 },
+    { day: 'Fri', hours: 1.0, lessons: 2 },
+    { day: 'Sat', hours: 3.0, lessons: 6 },
+    { day: 'Sun', hours: 0, lessons: 0 },
+  ],
+  totalHours: 47.5,
+  completedLessons: 34,
+  currentStreak: 6,
+  longestStreak: 14,
+  achievements: [
+    {
+      id: 'first-lesson',
+      title: 'First Step',
+      description: 'Completed your first lesson',
+      icon: '🎯',
+      earnedAt: '2026-09-15',
+      earned: true,
+    },
+    {
+      id: 'week-streak',
+      title: 'Week Warrior',
+      description: 'Maintained a 7-day learning streak',
+      icon: '🔥',
+      earnedAt: '2026-09-22',
+      earned: true,
+    },
+    {
+      id: 'ten-lessons',
+      title: 'Quick Learner',
+      description: 'Completed 10 lessons',
+      icon: '⚡',
+      earnedAt: '2026-09-28',
+      earned: true,
+    },
+    {
+      id: 'first-stage',
+      title: 'Stage Cleared',
+      description: 'Completed your first learning stage',
+      icon: '🏆',
+      earnedAt: '2026-10-05',
+      earned: true,
+    },
+    {
+      id: 'month-streak',
+      title: 'Month Master',
+      description: 'Maintain a 30-day learning streak',
+      icon: '👑',
+      earned: false,
+    },
+    {
+      id: 'fifty-lessons',
+      title: 'Half Century',
+      description: 'Complete 50 lessons',
+      icon: '💯',
+      earned: false,
+    },
+    {
+      id: 'first-path',
+      title: 'Pathfinder',
+      description: 'Generated your first learning path',
+      icon: '🗺️',
+      earnedAt: '2026-09-14',
+      earned: true,
+    },
+    {
+      id: 'hundred-hours',
+      title: 'Century Club',
+      description: 'Log 100 hours of learning',
+      icon: '💪',
+      earned: false,
+    },
+  ],
+  moduleCompletion: [
+    { name: 'HTML & CSS', completed: 8, total: 8 },
+    { name: 'JavaScript', completed: 12, total: 15 },
+    { name: 'React', completed: 6, total: 12 },
+    { name: 'Node.js', completed: 4, total: 10 },
+    { name: 'Databases', completed: 4, total: 8 },
+    { name: 'Deployment', completed: 0, total: 6 },
+  ],
+};
+
+export const HOURS_CHART_DATA = [
+  { month: 'Sep', hours: 12.5 },
+  { month: 'Oct', hours: 18.0 },
+  { month: 'Nov', hours: 10.5 },
+  { month: 'Dec', hours: 6.5 },
+];
