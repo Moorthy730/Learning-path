@@ -157,13 +157,24 @@ export default function RoadmapDetails() {
 
   const pct = path.totalLessons > 0 ? Math.round((path.completedLessons / path.totalLessons) * 100) : 0;
 
-  const handleToggle = (lessonId: string) => {
+  const handleToggle = async (lessonId: string) => {
     const prev = path.stages.flatMap(s => s.modules.flatMap(m => m.lessons)).find(l => l.id === lessonId);
+    const newCompleted = !prev?.completed;
+
+    // Optimistic UI update via localStorage (always works in demo mode)
     toggleLesson(path.id, lessonId);
     addToast({
       type: prev?.completed ? 'info' : 'success',
       title: prev?.completed ? 'Lesson marked incomplete' : 'Lesson completed! 🎉',
     });
+
+    // Attempt to sync to backend (silently ignored if backend unavailable)
+    try {
+      const { lessonsService } = await import('../services/backendService');
+      await lessonsService.toggleProgress(lessonId, newCompleted);
+    } catch {
+      // Backend unavailable — localStorage state is the source of truth in demo mode
+    }
   };
 
   const gradientClass = colorMap[path.color] ?? 'from-indigo-500 to-indigo-600';

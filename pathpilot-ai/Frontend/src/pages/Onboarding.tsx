@@ -96,19 +96,31 @@ export default function Onboarding() {
     }, 700);
 
     try {
-      const targetWeeks =
-        data.targetDurationUnit === 'months'
-          ? data.targetDuration * 4
-          : data.targetDuration;
+      let path;
 
-      const path = await generateLearningPath({
-        careerGoal: data.careerGoal === 'Custom' ? (data.customGoal || 'Custom Path') : data.careerGoal,
-        skillLevel: data.skillLevel,
-        hoursPerDay: data.hoursPerDay,
-        targetWeeks,
-        learningFormat: data.learningFormat,
-        learningObjective: data.learningObjective,
-      });
+      try {
+        // Attempt to use real backend (requires Supabase session + backend running)
+        const { pathsService, backendPathToFrontend } = await import('../services/backendService');
+        const backendPath = await pathsService.generate(data);
+        path = backendPathToFrontend(backendPath);
+        // Remove from localStorage — real data is in Supabase
+      } catch (backendErr) {
+        // Backend unavailable or not configured — fall back to demo mock
+        const { generateLearningPath: mockGenerate } = await import('../services/roadmapService');
+        const targetWeeks =
+          data.targetDurationUnit === 'months'
+            ? data.targetDuration * 4
+            : data.targetDuration;
+
+        path = await mockGenerate({
+          careerGoal: data.careerGoal === 'Custom' ? (data.customGoal || 'Custom Path') : data.careerGoal,
+          skillLevel: data.skillLevel,
+          hoursPerDay: data.hoursPerDay,
+          targetWeeks,
+          learningFormat: data.learningFormat,
+          learningObjective: data.learningObjective,
+        });
+      }
 
       addPath(path);
       addToast({ type: 'success', title: 'Learning path generated!', message: 'Your personalized roadmap is ready.' });

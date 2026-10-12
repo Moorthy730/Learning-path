@@ -28,15 +28,28 @@ export default function SignIn() {
     setError('');
     setLoading(true);
 
-    // Simulate sign-in delay
-    await new Promise(r => setTimeout(r, 1000));
-
-    // Demo auth — look up stored user or create demo
-    const name = email.split('@')[0];
-    signIn(name.charAt(0).toUpperCase() + name.slice(1), email, false);
-    addToast({ type: 'success', title: 'Welcome back!', message: 'You have signed in successfully.' });
-    setLoading(false);
-    navigate('/dashboard');
+    try {
+      // Try real Supabase authentication first
+      const { authService } = await import('../services/backendService');
+      await authService.signIn(email, password);
+      const name = email.split('@')[0];
+      signIn(name.charAt(0).toUpperCase() + name.slice(1), email, false);
+      addToast({ type: 'success', title: 'Welcome back!', message: 'You have signed in successfully.' });
+      navigate('/dashboard');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      // If Supabase is not configured, fall back to demo mode
+      if (msg.includes('placeholder') || msg.includes('fetch') || msg.includes('NetworkError')) {
+        const name = email.split('@')[0];
+        signIn(name.charAt(0).toUpperCase() + name.slice(1), email, false);
+        addToast({ type: 'success', title: 'Welcome back! (Demo)', message: 'Running in demo mode.' });
+        navigate('/dashboard');
+      } else {
+        setError(msg || 'Sign in failed. Please check your credentials.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDemoEntry = () => {
