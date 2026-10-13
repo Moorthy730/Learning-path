@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Clock, Sparkles, X } from 'lucide-react';
 import { CAREER_OPTIONS } from '../data/careers';
@@ -6,13 +6,13 @@ import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
 const colorBorderMap: Record<string, string> = {
-  indigo: 'border-indigo-100 dark:border-indigo-900/40 hover:border-indigo-300',
-  violet: 'border-violet-100 dark:border-violet-900/40 hover:border-violet-300',
-  blue: 'border-blue-100 dark:border-blue-900/40 hover:border-blue-300',
+  indigo: 'border-[#F9E3B5] dark:border-[#D85C4A]/20 hover:border-indigo-300',
+  violet: 'border-[#F6C77B] dark:border-[#E9825C]/40 hover:border-[#E9825C]',
+  blue: 'border-[#F6C77B] dark:border-blue-900/40 hover:border-blue-300',
   pink: 'border-pink-100 dark:border-pink-900/40 hover:border-pink-300',
   red: 'border-red-100 dark:border-red-900/40 hover:border-red-300',
   green: 'border-green-100 dark:border-green-900/40 hover:border-green-300',
-  sky: 'border-sky-100 dark:border-sky-900/40 hover:border-sky-300',
+  sky: 'border-[#F6C77B] dark:border-sky-900/40 hover:border-sky-300',
   orange: 'border-orange-100 dark:border-orange-900/40 hover:border-orange-300',
 };
 
@@ -61,7 +61,7 @@ export default function ExploreCareers() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search careers or skills..."
-          className="w-full pl-11 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+          className="w-full pl-11 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1c0f0d] text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#D85C4A] shadow-sm"
           id="careers-search"
         />
         {query && (
@@ -75,14 +75,14 @@ export default function ExploreCareers() {
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-gray-500 dark:text-gray-400">No careers match your search. Try different keywords.</p>
-          <button onClick={() => setQuery('')} className="mt-2 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:underline">Clear search</button>
+          <button onClick={() => setQuery('')} className="mt-2 text-[#D85C4A] dark:text-[#E9825C] text-sm font-medium hover:underline">Clear search</button>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filtered.map(career => (
             <div
               key={career.id}
-              className={`bg-white dark:bg-gray-900 rounded-2xl border-2 ${colorBorderMap[career.color] ?? 'border-gray-100 hover:border-indigo-300'} p-5 flex flex-col gap-4 transition-all duration-200 hover:shadow-md dark:hover:border-opacity-60`}
+              className={`bg-white dark:bg-[#1c0f0d] rounded-2xl border-2 ${colorBorderMap[career.color] ?? 'border-gray-100 hover:border-indigo-300'} p-5 flex flex-col gap-4 transition-all duration-200 hover:shadow-md dark:hover:border-opacity-60`}
             >
               <div>
                 <div className="text-4xl mb-3">{career.icon}</div>

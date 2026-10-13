@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+﻿import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   CheckCircle2, Circle, AlertTriangle, Clock,
@@ -26,7 +26,7 @@ function TaskRow({
   return (
     <div className={`flex items-start gap-3 p-3 rounded-xl transition-all ${
       task.completed
-        ? 'opacity-60 bg-gray-50 dark:bg-gray-800/30'
+        ? 'opacity-60 bg-gray-50 dark:bg-[#2a1410]/30'
         : task.overdue
         ? 'bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30'
         : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
@@ -40,7 +40,7 @@ function TaskRow({
         {task.completed ? (
           <CheckCircle2 className="w-5 h-5 text-emerald-500" />
         ) : (
-          <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600 hover:text-[#54ACBF]" />
+          <Circle className="w-5 h-5 text-[#F6C77B] dark:text-[#5c2e20] hover:text-[#D85C4A]" />
         )}
       </button>
       <div className="flex-1 min-w-0">
@@ -74,7 +74,7 @@ function TaskRow({
       </div>
       <Link
         to={`/paths/${task.path_id}`}
-        className="flex-shrink-0 text-gray-300 dark:text-gray-600 hover:text-[#26658C] dark:hover:text-[#54ACBF] transition-colors"
+        className="flex-shrink-0 text-gray-300 dark:text-gray-600 hover:text-[#D85C4A] dark:hover:text-[#E9825C] transition-colors"
         aria-label="Open learning path"
         title="Open learning path"
       >
@@ -139,9 +139,9 @@ export default function DailyTaskChecklist() {
 
   if (isDemo) {
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-[#F6C77B]/25 dark:border-[#5c2e20]/40 p-6">
         <div className="flex items-center gap-2 mb-4">
-          <CalendarCheck className="w-5 h-5 text-[#26658C]" />
+          <CalendarCheck className="w-5 h-5 text-[#D85C4A]" />
           <h2 className="font-semibold text-gray-900 dark:text-white">Today's Tasks</h2>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
@@ -152,11 +152,11 @@ export default function DailyTaskChecklist() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+    <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <CalendarCheck className="w-5 h-5 text-[#26658C]" />
+          <CalendarCheck className="w-5 h-5 text-[#D85C4A]" />
           <h2 className="font-semibold text-gray-900 dark:text-white">Today's Tasks</h2>
           {allTasks.length > 0 && (
             <span className="text-xs text-gray-400 dark:text-gray-500">
@@ -169,7 +169,7 @@ export default function DailyTaskChecklist() {
           onClick={load}
           disabled={loading}
           aria-label="Refresh tasks"
-          className="p-1.5 rounded-lg text-gray-400 hover:text-[#26658C] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-1.5 rounded-lg text-gray-400 hover:text-[#D85C4A] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -178,9 +178,9 @@ export default function DailyTaskChecklist() {
       {/* Progress bar */}
       {allTasks.length > 0 && (
         <div className="mb-4">
-          <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[#F9E3B5] dark:bg-[#3a1c14] rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#26658C] to-[#54ACBF] rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[#D85C4A] to-[#F3A65A] rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -196,7 +196,7 @@ export default function DailyTaskChecklist() {
       ) : loading && !tasks ? (
         <div className="space-y-2">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+            <div key={i} className="h-12 bg-gray-100 dark:bg-[#2a1410] rounded-xl animate-pulse" />
           ))}
         </div>
       ) : allTasks.length === 0 ? (
@@ -223,7 +223,7 @@ export default function DailyTaskChecklist() {
           {/* Today's pending */}
           {(tasks?.today?.length ?? 0) > 0 && (
             <div className="mb-3">
-              <p className="text-[10px] font-semibold text-[#26658C] dark:text-[#54ACBF] uppercase tracking-wider mb-1.5 px-1">
+              <p className="text-[10px] font-semibold text-[#D85C4A] dark:text-[#F3A65A] uppercase tracking-wider mb-1.5 px-1">
                 Today
               </p>
               {tasks!.today.map(t => (

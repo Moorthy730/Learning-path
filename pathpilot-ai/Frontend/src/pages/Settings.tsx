@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sun, Moon, Trash2, LogOut, AlertTriangle, Bell, BellOff, Clock, Globe } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -11,7 +11,7 @@ import type { LearningFormat } from '../types';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
         <h2 className="font-semibold text-gray-900 dark:text-white">{title}</h2>
       </div>
@@ -140,7 +140,7 @@ export default function Settings() {
               <input
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-32"
+                className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-[#2a1410] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A] w-32"
                 id="settings-name-input"
               />
               <Button size="sm" onClick={handleSaveName} id="settings-save-name">Save</Button>
@@ -149,7 +149,7 @@ export default function Settings() {
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-700 dark:text-gray-300">{user?.name}</span>
-              <button onClick={() => setNameEditing(true)} className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline" id="settings-edit-name">Edit</button>
+              <button onClick={() => setNameEditing(true)} className="text-xs text-[#D85C4A] dark:text-[#E9825C] hover:underline" id="settings-edit-name">Edit</button>
             </div>
           )}
         </Field>
@@ -169,7 +169,7 @@ export default function Settings() {
           <select
             value={dailyTarget}
             onChange={e => setDailyTarget(Number(e.target.value))}
-            className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-[#2a1410] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A]"
             id="settings-daily-target"
           >
             {[0.5,1,1.5,2,3,4,5,6].map(h => <option key={h} value={h}>{h} hr{h !== 1 ? 's' : ''}/day</option>)}
@@ -179,7 +179,7 @@ export default function Settings() {
           <select
             value={preferredFormat}
             onChange={e => setPreferredFormat(e.target.value as LearningFormat)}
-            className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-[#2a1410] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A]"
             id="settings-format"
           >
             <option value="video">Video Courses</option>
@@ -204,7 +204,7 @@ export default function Settings() {
           </div>
         ) : remLoading ? (
           <div className="space-y-3">
-            {[1,2,3].map(i => <div key={i} className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />)}
+            {[1,2,3].map(i => <div key={i} className="h-10 bg-gray-100 dark:bg-[#2a1410] rounded-xl animate-pulse" />)}
           </div>
         ) : remError && !remPrefs ? (
           <p className="text-sm text-red-500">{remError}</p>
@@ -218,8 +218,8 @@ export default function Settings() {
                 id="reminder-toggle-btn"
                 onClick={() => setRemPrefs(p => p ? { ...p, enabled: !p.enabled } : p)}
                 aria-pressed={remPrefs.enabled}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#26658C] focus:ring-offset-2 ${
-                  remPrefs.enabled ? 'bg-[#26658C]' : 'bg-gray-200 dark:bg-gray-700'
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#D85C4A] focus:ring-offset-2 ${
+                  remPrefs.enabled ? 'bg-[#D85C4A]' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               >
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
@@ -240,7 +240,7 @@ export default function Settings() {
                   value={remPrefs.reminder_time}
                   onChange={e => setRemPrefs(p => p ? { ...p, reminder_time: e.target.value } : p)}
                   disabled={!remPrefs.enabled}
-                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#26658C] disabled:opacity-50"
+                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-[#2a1410] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A] disabled:opacity-50"
                 />
               </div>
             </Field>
@@ -256,7 +256,7 @@ export default function Settings() {
                   value={remPrefs.timezone}
                   onChange={e => setRemPrefs(p => p ? { ...p, timezone: e.target.value } : p)}
                   disabled={!remPrefs.enabled}
-                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#26658C] disabled:opacity-50"
+                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-[#2a1410] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A] disabled:opacity-50"
                 >
                   {!TIMEZONES.includes(browserTz) && (
                     <option value={browserTz}>{browserTz} (detected)</option>
@@ -277,8 +277,8 @@ export default function Settings() {
                 onClick={() => setRemPrefs(p => p ? { ...p, email_enabled: !p.email_enabled } : p)}
                 aria-pressed={remPrefs.email_enabled}
                 disabled={!remPrefs.enabled}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#26658C] focus:ring-offset-2 disabled:opacity-50 ${
-                  remPrefs.email_enabled ? 'bg-[#26658C]' : 'bg-gray-200 dark:bg-gray-700'
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#D85C4A] focus:ring-offset-2 disabled:opacity-50 ${
+                  remPrefs.email_enabled ? 'bg-[#D85C4A]' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               >
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
@@ -292,7 +292,7 @@ export default function Settings() {
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
                 {remPrefs.enabled ? (
-                  <><Bell className="w-3 h-3 text-[#26658C]" /> Reminders ON at {remPrefs.reminder_time}</>  
+                  <><Bell className="w-3 h-3 text-[#D85C4A]" /> Reminders ON at {remPrefs.reminder_time}</>  
                 ) : (
                   <><BellOff className="w-3 h-3" /> Reminders disabled</>
                 )}
@@ -313,7 +313,7 @@ export default function Settings() {
       {/* Theme */}
       <Section title="Appearance">
         <Field label="Theme" description="Choose between light and dark mode">
-          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-gray-100 dark:bg-[#2a1410] rounded-xl p-1">
             <button
               onClick={() => theme === 'dark' && toggleTheme()}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${theme === 'light' ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}

@@ -1,4 +1,4 @@
-import type { LearningPath, SkillLevel, LearningFormat, LearningObjective } from '../types';
+﻿import type { LearningPath, SkillLevel, LearningFormat, LearningObjective } from '../types';
 
 // ─── Helper to generate a unique ID ──────────────────────────────────────────
 let idCounter = 1;
@@ -424,7 +424,7 @@ function aiMlTemplate(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     icon: '🤖',
-    color: 'violet',
+    color: 'secondary',
   };
 }
 
@@ -509,7 +509,7 @@ function dataAnalystTemplate(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     icon: '📊',
-    color: 'blue',
+    color: 'accent',
   };
 }
 

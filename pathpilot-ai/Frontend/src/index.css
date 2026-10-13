@@ -1,15 +1,40 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   Sunset Glow — Design Token System (Tailwind v4 @theme)
+   Primary:        #D85C4A  (sunset-primary)
+   Secondary:      #E9825C  (sunset-secondary)
+   Accent:         #F3A65A  (sunset-accent)
+   Soft highlight: #F6C77B  (sunset-highlight)
+   Cream bg:       #F9E3B5  (sunset-cream)
+   Dark text:      #542E28  (sunset-text)
+   ═══════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Sunset Glow palette ───────────────────────────────────── */
+  --color-sunset-primary:    #D85C4A;
+  --color-sunset-primary-hover: #C24E3D;
+  --color-sunset-primary-active: #A84032;
+  --color-sunset-secondary:  #E9825C;
+  --color-sunset-secondary-hover: #D97250;
+  --color-sunset-accent:     #F3A65A;
+  --color-sunset-highlight:  #F6C77B;
+  --color-sunset-cream:      #F9E3B5;
+  --color-sunset-cream-dark: #F2D49A;
+  --color-sunset-text:       #542E28;
+  --color-sunset-text-muted: #8B5447;
+  --color-sunset-surface:    #FFFAF4;
+
+  /* ── Gradient helpers ──────────────────────────────────────── */
+  --gradient-sunset: linear-gradient(135deg, #D85C4A 0%, #E9825C 40%, #F3A65A 75%, #F6C77B 100%);
+  --gradient-sunset-soft: linear-gradient(135deg, #F9E3B5 0%, #F6C77B 50%, #F3A65A 100%);
+  --gradient-sunset-hero: linear-gradient(135deg, #D85C4A 0%, #E9825C 50%, #F3A65A 100%);
+}
+
 /* ── Custom animations ────────────────────────────────────────── */
 @keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
 @keyframes fade-in {
@@ -17,64 +42,67 @@
   to   { opacity: 1; }
 }
 
-/* ── Global base ──────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* ── Global base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #ffffff;
-  color: #111827;
+  color: #1c0f0d;
 }
 
-/* Dark mode body */
 .dark body {
-  background-color: #030712;
-  color: #f9fafb;
+  background-color: #1c0f0d;
+  color: #f9ede8;
 }
 
 /* ── Utility classes ──────────────────────────────────────────── */
-.animate-slide-in {
-  animation: slide-in 0.25s ease-out both;
+.animate-slide-in  { animation: slide-in 0.25s ease-out both; }
+.animate-fade-in   { animation: fade-in  0.3s  ease-out both; }
+
+/* Sunset gradient text */
+.text-gradient-sunset {
+  background: var(--gradient-sunset-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out both;
-}
+/* Reusable gradient backgrounds */
+.bg-gradient-sunset       { background: var(--gradient-sunset); }
+.bg-gradient-sunset-soft  { background: var(--gradient-sunset-soft); }
+.bg-gradient-sunset-hero  { background: var(--gradient-sunset-hero); }
 
-/* ── Scrollbar styling ────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar         { width: 6px; height: 6px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: #F6C77B; border-radius: 999px; }
+.dark ::-webkit-scrollbar-thumb { background: #8B5447; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 999px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #374151;
-}
-
-/* ── Focus ring consistency ───────────────────────────────────── */
+/* ── Focus ring — Sunset Primary ─────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #D85C4A;
   outline-offset: 2px;
 }
 
-/* ── Recharts tooltip tweak ───────────────────────────────────── */
-.recharts-tooltip-wrapper {
-  z-index: 100;
+/* ── Recharts tooltip ─────────────────────────────────────────── */
+.recharts-tooltip-wrapper { z-index: 100; }
+
+/* ── Sunset Card Surface ─────────────────────────────────────── */
+.card-surface {
+  background-color: #ffffff;
+  border: 1px solid #F6C77B33;
+}
+.dark .card-surface {
+  background-color: #2a1410;
+  border-color: #5c2e2033;
 }

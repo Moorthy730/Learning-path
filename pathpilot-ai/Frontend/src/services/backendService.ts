@@ -1,4 +1,4 @@
-/**
+﻿/**
  * backendService.ts — Typed wrappers for every PathPilot AI backend endpoint.
  *
  * When VITE_API_URL is set and the user has a real Supabase session,

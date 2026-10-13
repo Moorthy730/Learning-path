@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Filter, Trash2, BookOpen, Clock, ChevronRight,
@@ -13,7 +13,7 @@ import type { LearningPath, SkillLevel, PathStatus } from '../types';
 function DeleteModal({ path, onConfirm, onCancel }: { path: LearningPath; onConfirm: () => void; onCancel: () => void }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl p-6 max-w-sm w-full">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl p-6 max-w-sm w-full">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
@@ -33,7 +33,7 @@ function DeleteModal({ path, onConfirm, onCancel }: { path: LearningPath; onConf
 }
 
 const colorMap: Record<string, string> = {
-  indigo: 'bg-indigo-500', violet: 'bg-violet-500', blue: 'bg-blue-500',
+  indigo: 'bg-[#D85C4A]', violet: 'bg-[#E9825C]', blue: 'bg-blue-500',
   green: 'bg-green-500', pink: 'bg-pink-500', red: 'bg-red-500',
   sky: 'bg-sky-500', orange: 'bg-orange-500',
 };
@@ -72,11 +72,11 @@ export default function MyLearningPaths() {
   const PathCard = ({ path }: { path: LearningPath }) => {
     const pct = path.totalLessons > 0 ? Math.round((path.completedLessons / path.totalLessons) * 100) : 0;
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-all group">
-        <div className={`h-2 ${colorMap[path.color] ?? 'bg-indigo-500'}`} />
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-all group">
+        <div className={`h-2 ${colorMap[path.color] ?? 'bg-[#D85C4A]'}`} />
         <div className="p-5">
           <div className="flex items-start gap-3 mb-3">
-            <div className={`w-10 h-10 rounded-xl ${colorMap[path.color] ?? 'bg-indigo-500'} flex items-center justify-center text-xl flex-shrink-0`}>
+            <div className={`w-10 h-10 rounded-xl ${colorMap[path.color] ?? 'bg-[#D85C4A]'} flex items-center justify-center text-xl flex-shrink-0`}>
               {path.icon}
             </div>
             <div className="flex-1 min-w-0">
@@ -118,8 +118,8 @@ export default function MyLearningPaths() {
   const PathRow = ({ path }: { path: LearningPath }) => {
     const pct = path.totalLessons > 0 ? Math.round((path.completedLessons / path.totalLessons) * 100) : 0;
     return (
-      <div className="flex items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-all">
-        <div className={`w-10 h-10 rounded-xl ${colorMap[path.color] ?? 'bg-indigo-500'} flex items-center justify-center text-xl flex-shrink-0`}>
+      <div className="flex items-center gap-4 p-4 bg-white dark:bg-[#1c0f0d] rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-all">
+        <div className={`w-10 h-10 rounded-xl ${colorMap[path.color] ?? 'bg-[#D85C4A]'} flex items-center justify-center text-xl flex-shrink-0`}>
           {path.icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -166,7 +166,7 @@ export default function MyLearningPaths() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search by career goal..."
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1c0f0d] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#D85C4A]"
             id="paths-search"
           />
           {query && (
@@ -178,7 +178,7 @@ export default function MyLearningPaths() {
         <select
           value={filterLevel}
           onChange={e => setFilterLevel(e.target.value as SkillLevel | 'all')}
-          className="px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1c0f0d] text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#D85C4A]"
           id="paths-filter-level"
         >
           <option value="all">All Levels</option>
@@ -189,7 +189,7 @@ export default function MyLearningPaths() {
         <select
           value={filterStatus}
           onChange={e => setFilterStatus(e.target.value as PathStatus | 'all')}
-          className="px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-[#1c0f0d] text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#D85C4A]"
           id="paths-filter-status"
         >
           <option value="all">All Status</option>
@@ -197,11 +197,11 @@ export default function MyLearningPaths() {
           <option value="in-progress">In Progress</option>
           <option value="completed">Completed</option>
         </select>
-        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
-          <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`} aria-label="Grid view">
+        <div className="flex gap-1 bg-gray-100 dark:bg-[#2a1410] p-1 rounded-xl">
+          <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm text-[#D85C4A]' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`} aria-label="Grid view">
             <LayoutGrid className="w-4 h-4" />
           </button>
-          <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`} aria-label="List view">
+          <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm text-[#D85C4A]' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`} aria-label="List view">
             <List className="w-4 h-4" />
           </button>
         </div>
@@ -209,7 +209,7 @@ export default function MyLearningPaths() {
 
       {/* Content */}
       {filtered.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-16 text-center">
+        <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-16 text-center">
           {paths.length === 0 ? (
             <>
               <BookOpen className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
@@ -222,7 +222,7 @@ export default function MyLearningPaths() {
               <Filter className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">No paths match your filters</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Try adjusting your search or filters.</p>
-              <button onClick={() => { setQuery(''); setFilterLevel('all'); setFilterStatus('all'); }} className="text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:underline">Clear all filters</button>
+              <button onClick={() => { setQuery(''); setFilterLevel('all'); setFilterStatus('all'); }} className="text-[#D85C4A] dark:text-[#E9825C] text-sm font-medium hover:underline">Clear all filters</button>
             </>
           )}
         </div>

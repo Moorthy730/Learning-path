@@ -1,4 +1,4 @@
-import type { CareerOption } from '../types';
+﻿import type { CareerOption } from '../types';
 
 export const CAREER_OPTIONS: CareerOption[] = [
   {
@@ -18,7 +18,7 @@ export const CAREER_OPTIONS: CareerOption[] = [
     skills: ['Python', 'TensorFlow', 'PyTorch', 'NumPy', 'Pandas', 'Scikit-learn', 'SQL'],
     estimatedDuration: '8–14 months',
     icon: '🤖',
-    color: 'violet',
+    color: 'secondary',
     difficulty: 'advanced',
   },
   {
@@ -28,7 +28,7 @@ export const CAREER_OPTIONS: CareerOption[] = [
     skills: ['SQL', 'Excel', 'Python', 'Tableau', 'Power BI', 'Statistics', 'Pandas'],
     estimatedDuration: '4–8 months',
     icon: '📊',
-    color: 'blue',
+    color: 'accent',
     difficulty: 'beginner',
   },
   {

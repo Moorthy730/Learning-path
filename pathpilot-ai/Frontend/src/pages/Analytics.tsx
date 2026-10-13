@@ -9,16 +9,16 @@ import { useApp } from '../context/AppContext';
 import Badge from '../components/ui/Badge';
 import ProgressBar from '../components/ui/ProgressBar';
 
-const COLORS = ['#6366f1', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+const COLORS = ['#D85C4A', '#E9825C', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
 const pieData = [
-  { name: 'Completed', value: 34, color: '#6366f1' },
+  { name: 'Completed', value: 34, color: '#D85C4A' },
   { name: 'Remaining', value: 46, color: '#e5e7eb' },
 ];
 
 function StatCard({ icon: Icon, label, value, color }: { icon: React.ComponentType<{className?: string}>; label: string; value: string | number; color: string }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 flex items-center gap-4">
+    <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-5 flex items-center gap-4">
       <div className={`w-11 h-11 rounded-xl ${color} flex items-center justify-center flex-shrink-0`}>
         <Icon className="w-5 h-5 text-white" />
       </div>
@@ -39,7 +39,7 @@ export default function Analytics() {
   const totalLessons = paths.reduce((a, p) => a + p.totalLessons, 0);
   const realPieData = paths.length > 0
     ? [
-        { name: 'Completed', value: totalCompleted || 0, color: '#6366f1' },
+        { name: 'Completed', value: totalCompleted || 0, color: '#D85C4A' },
         { name: 'Remaining', value: Math.max(0, totalLessons - totalCompleted), color: '#e5e7eb' },
       ]
     : pieData;
@@ -53,15 +53,15 @@ export default function Analytics() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Clock} label="Total Hours" value={`${user?.totalHoursLearned?.toFixed(1) ?? analytics.totalHours}h`} color="bg-indigo-500" />
-        <StatCard icon={Target} label="Lessons Done" value={totalCompleted || analytics.completedLessons} color="bg-violet-500" />
+        <StatCard icon={Clock} label="Total Hours" value={`${user?.totalHoursLearned?.toFixed(1) ?? analytics.totalHours}h`} color="bg-[#D85C4A]" />
+        <StatCard icon={Target} label="Lessons Done" value={totalCompleted || analytics.completedLessons} color="bg-[#E9825C]" />
         <StatCard icon={Flame} label="Current Streak" value={`${user?.learningStreak ?? analytics.currentStreak} days`} color="bg-orange-500" />
         <StatCard icon={Trophy} label="Longest Streak" value={`${analytics.longestStreak} days`} color="bg-amber-500" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Weekly Activity */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <div className="lg:col-span-2 bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
           <h2 className="font-semibold text-gray-900 dark:text-white mb-6">Weekly Learning Activity</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={analytics.weeklyActivity} barSize={28}>
@@ -75,8 +75,8 @@ export default function Analytics() {
               <Bar dataKey="hours" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" />
-                  <stop offset="100%" stopColor="#8b5cf6" />
+                  <stop offset="0%" stopColor="#D85C4A" />
+                  <stop offset="100%" stopColor="#E9825C" />
                 </linearGradient>
               </defs>
             </BarChart>
@@ -84,7 +84,7 @@ export default function Analytics() {
         </div>
 
         {/* Lessons pie */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
           <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Lesson Progress</h2>
           <ResponsiveContainer width="100%" height={180}>
             <PieChart>
@@ -106,7 +106,7 @@ export default function Analytics() {
       </div>
 
       {/* Hours over time */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <h2 className="font-semibold text-gray-900 dark:text-white mb-6">Learning Hours Over Time</h2>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={HOURS_CHART_DATA}>
@@ -114,13 +114,13 @@ export default function Analytics() {
             <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }} formatter={(val) => [`${val}h`, 'Hours']} />
-            <Line type="monotone" dataKey="hours" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: '#6366f1', r: 4 }} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="hours" stroke="#D85C4A" strokeWidth={2.5} dot={{ fill: '#D85C4A', r: 4 }} activeDot={{ r: 6 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Module Completion */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <h2 className="font-semibold text-gray-900 dark:text-white mb-5">Module Completion</h2>
         <div className="space-y-4">
           {analytics.moduleCompletion.map((mod, i) => (
@@ -138,7 +138,7 @@ export default function Analytics() {
       </div>
 
       {/* Achievements */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-semibold text-gray-900 dark:text-white">Achievements</h2>
           <Badge color="indigo">{analytics.achievements.filter(a => a.earned).length} / {analytics.achievements.length} earned</Badge>
@@ -149,15 +149,15 @@ export default function Analytics() {
               key={achievement.id}
               className={`p-4 rounded-xl border text-center transition-all ${
                 achievement.earned
-                  ? 'border-indigo-100 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20'
-                  : 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 opacity-50'
+                  ? 'border-[#F9E3B5] dark:border-[#D85C4A]/40 bg-[#FFF0EE] dark:bg-[#D85C4A]/15'
+                  : 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#2a1410] opacity-50'
               }`}
             >
               <div className="text-3xl mb-2">{achievement.icon}</div>
               <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">{achievement.title}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{achievement.description}</p>
               {achievement.earnedAt && (
-                <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1">{new Date(achievement.earnedAt).toLocaleDateString()}</p>
+                <p className="text-xs text-[#D85C4A] dark:text-[#E9825C] mt-1">{new Date(achievement.earnedAt).toLocaleDateString()}</p>
               )}
             </div>
           ))}

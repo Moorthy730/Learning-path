@@ -105,12 +105,12 @@ export default function NotificationBell() {
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen(v => !v)}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors relative"
+        className="p-2 rounded-lg hover:bg-[#FFF0EE] dark:hover:bg-[#2a1410] text-[#8B5447] dark:text-[#F6C77B]/60 transition-colors relative"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span
-            className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-[#54ACBF] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-pulse"
+            className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-[#D85C4A] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-pulse"
             aria-hidden="true"
           >
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -122,15 +122,15 @@ export default function NotificationBell() {
         <div
           role="dialog"
           aria-label="Notifications panel"
-          className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl z-50 overflow-hidden"
+          className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-1rem)] bg-white dark:bg-[#2a1410] rounded-2xl border border-[#F6C77B]/30 dark:border-[#5c2e20]/50 shadow-2xl shadow-[#D85C4A]/10 z-50 overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#F6C77B]/25 dark:border-[#5c2e20]/40">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-[#26658C]" />
-              <span className="font-semibold text-sm text-gray-900 dark:text-white">Notifications</span>
+              <Bell className="w-4 h-4 text-[#D85C4A]" />
+              <span className="font-semibold text-sm text-[#542E28] dark:text-[#F9E3B5]">Notifications</span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 bg-[#54ACBF]/20 text-[#26658C] dark:text-[#A7EBF2] text-xs font-semibold rounded-full">
+                <span className="px-1.5 py-0.5 bg-[#D85C4A]/15 text-[#D85C4A] dark:text-[#F6C77B] text-xs font-semibold rounded-full">
                   {unreadCount} new
                 </span>
               )}
@@ -139,7 +139,7 @@ export default function NotificationBell() {
               <button
                 id="mark-all-read-btn"
                 onClick={handleMarkAllRead}
-                className="text-xs text-[#26658C] dark:text-[#A7EBF2] hover:underline flex items-center gap-1 font-medium"
+                className="text-xs text-[#D85C4A] dark:text-[#F3A65A] hover:underline flex items-center gap-1 font-medium"
               >
                 <CheckCheck className="w-3 h-3" />
                 Mark all read
@@ -152,29 +152,29 @@ export default function NotificationBell() {
             {isDemo ? (
               <div className="px-4 py-8 text-center">
                 <BellOff className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-[#8B5447] dark:text-[#F6C77B]/60">
                   Notifications are available after sign-in.
                 </p>
-                <Link to="/signin" className="text-xs text-[#26658C] dark:text-[#A7EBF2] hover:underline mt-1 block">
+                <Link to="/signin" className="text-xs text-[#D85C4A] dark:text-[#F3A65A] hover:underline mt-1 block">
                   Sign in →
                 </Link>
               </div>
             ) : notifications.length === 0 ? (
               <div className="px-4 py-8 text-center">
                 <Bell className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">You're all caught up!</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <p className="text-sm text-[#8B5447] dark:text-[#F6C77B]/60">You're all caught up!</p>
+                <p className="text-xs text-[#8B5447]/60 dark:text-[#F6C77B]/40 mt-1">
                   Daily reminders will appear here.
                 </p>
               </div>
             ) : (
-              <ul className="divide-y divide-gray-50 dark:divide-gray-800">
+              <ul className="divide-y divide-[#F6C77B]/20 dark:divide-[#5c2e20]/30">
                 {notifications.map(n => (
                   <li
                     key={n.id}
                     onClick={() => !n.read && handleMarkRead(n.id)}
-                    className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer ${
-                      !n.read ? 'bg-[#A7EBF2]/10 dark:bg-[#023859]/30' : ''
+                    className={`px-4 py-3 hover:bg-[#FFF8F0] dark:hover:bg-[#3a1c14]/50 transition-colors cursor-pointer ${
+                      !n.read ? 'bg-[#F9E3B5]/40 dark:bg-[#D85C4A]/10' : ''
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -183,21 +183,21 @@ export default function NotificationBell() {
                         <div className="flex items-start justify-between gap-2">
                           <p className={`text-sm font-medium leading-tight ${
                             !n.read
-                              ? 'text-gray-900 dark:text-white'
+                              ? 'text-[#542E28] dark:text-[#F9E3B5]'
                               : 'text-gray-600 dark:text-gray-400'
                           }`}>
                             {n.title}
                           </p>
                           {!n.read && (
-                            <span className="w-2 h-2 bg-[#54ACBF] rounded-full flex-shrink-0 mt-1" />
+                            <span className="w-2 h-2 bg-[#D85C4A] rounded-full flex-shrink-0 mt-1" />
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+                        <p className="text-xs text-[#8B5447] dark:text-[#F6C77B]/60 mt-0.5 line-clamp-2">
                           {n.message}
                         </p>
                         <div className="flex items-center gap-1 mt-1">
-                          <Clock className="w-3 h-3 text-gray-400" />
-                          <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                          <Clock className="w-3 h-3 text-[#8B5447]/60" />
+                          <span className="text-[10px] text-[#8B5447]/60 dark:text-[#F6C77B]/40">
                             {timeAgo(n.created_at)}
                           </span>
                           {(() => {
@@ -206,7 +206,7 @@ export default function NotificationBell() {
                               <Link
                                 to={`/paths/${pathId}`}
                                 onClick={e => { e.stopPropagation(); setOpen(false); }}
-                                className="ml-auto text-[10px] text-[#26658C] dark:text-[#A7EBF2] hover:underline flex items-center gap-0.5"
+                                className="ml-auto text-[10px] text-[#D85C4A] dark:text-[#F3A65A] hover:underline flex items-center gap-0.5"
                               >
                                 Open <ExternalLink className="w-2.5 h-2.5" />
                               </Link>
@@ -222,11 +222,11 @@ export default function NotificationBell() {
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-2.5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+          <div className="px-4 py-2.5 border-t border-[#F6C77B]/25 dark:border-[#5c2e20]/40 bg-[#FFFAF5] dark:bg-[#2a1410]/80">
             <Link
               to="/settings"
               onClick={() => setOpen(false)}
-              className="text-xs text-[#26658C] dark:text-[#A7EBF2] hover:underline"
+              className="text-xs text-[#D85C4A] dark:text-[#F3A65A] hover:underline"
               id="notification-settings-link"
             >
               Manage reminder settings →

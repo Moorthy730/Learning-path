@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, ChevronDown, ChevronRight, CheckCircle, Circle,
@@ -10,8 +10,8 @@ import Button from '../components/ui/Button';
 import type { Lesson, Module, Stage } from '../types';
 
 const colorMap: Record<string, string> = {
-  indigo: 'from-indigo-500 to-indigo-600',
-  violet: 'from-violet-500 to-violet-600',
+  indigo: 'from-[#D85C4A] to-[#D85C4A]',
+  violet: 'from-[#E9825C] to-[#F3A65A]',
   blue: 'from-blue-500 to-blue-600',
   green: 'from-green-500 to-green-600',
   pink: 'from-pink-500 to-pink-600',
@@ -35,7 +35,7 @@ function LessonItem({
     <div className={`flex items-start gap-3 p-3 rounded-xl transition-colors ${lesson.completed ? 'bg-emerald-50 dark:bg-emerald-900/10' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
       <button
         onClick={() => onToggle(lesson.id)}
-        className={`mt-0.5 flex-shrink-0 transition-colors ${lesson.completed ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-500'}`}
+        className={`mt-0.5 flex-shrink-0 transition-colors ${lesson.completed ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-600 hover:text-[#D85C4A]'}`}
         aria-label={lesson.completed ? 'Mark as incomplete' : 'Mark as complete'}
         id={`lesson-check-${lesson.id}`}
       >
@@ -61,7 +61,7 @@ function LessonItem({
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-0.5 text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="inline-flex items-center gap-0.5 text-xs text-[#D85C4A] dark:text-[#E9825C] hover:underline"
                 >
                   <ExternalLink className="w-3 h-3" /> {r.title}
                 </a>
@@ -83,7 +83,7 @@ function ModuleAccordion({ module, stageNum, onToggle }: { module: Module; stage
     <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+        className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#1c0f0d] hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
         id={`module-toggle-${module.id}`}
       >
         <div className="flex items-start gap-3">
@@ -117,7 +117,7 @@ function StageSection({ stage, onToggle }: { stage: Stage; onToggle: (lessonId: 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D85C4A] to-[#F3A65A] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
           {stage.number}
         </div>
         <div className="flex-1">
@@ -177,12 +177,12 @@ export default function RoadmapDetails() {
     }
   };
 
-  const gradientClass = colorMap[path.color] ?? 'from-indigo-500 to-indigo-600';
+  const gradientClass = colorMap[path.color] ?? 'from-[#D85C4A] to-[#D85C4A]';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Back */}
-      <button onClick={() => navigate('/paths')} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+      <button onClick={() => navigate('/paths')} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-[#D85C4A] dark:hover:text-[#E9825C] transition-colors">
         <ChevronLeft className="w-4 h-4" /> Back to My Paths
       </button>
 
@@ -229,7 +229,7 @@ export default function RoadmapDetails() {
       </div>
 
       {/* Required skills */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
+      <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Skills You'll Gain</h2>
         <div className="flex flex-wrap gap-2">
           {path.requiredSkills.map(skill => (

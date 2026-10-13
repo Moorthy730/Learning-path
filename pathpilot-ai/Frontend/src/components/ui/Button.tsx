@@ -10,11 +10,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30',
-  secondary: 'bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white shadow-sm',
-  outline: 'border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-gray-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
-  ghost: 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
-  danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm',
+  primary:
+    'bg-[#D85C4A] hover:bg-[#C24E3D] active:bg-[#A84032] text-white shadow-sm shadow-[#D85C4A]/30',
+  secondary:
+    'bg-[#E9825C] hover:bg-[#D97250] active:bg-[#C06240] text-white shadow-sm shadow-[#E9825C]/25',
+  outline:
+    'border border-[#F3A65A] bg-white dark:bg-[#2a1410] text-[#D85C4A] dark:text-[#F3A65A] hover:bg-[#FFF4EC] dark:hover:bg-[#3a1c14]',
+  ghost:
+    'bg-transparent text-[#542E28] dark:text-[#F6C77B] hover:bg-[#FFF4EC] dark:hover:bg-[#2a1410]',
+  danger:
+    'bg-red-600 hover:bg-red-700 text-white shadow-sm',
 };
 
 const sizes = {
@@ -41,7 +46,7 @@ export default function Button({
       disabled={disabled || loading}
       className={`
         inline-flex items-center justify-center font-semibold transition-all duration-150
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D85C4A] focus-visible:ring-offset-2
         disabled:opacity-50 disabled:cursor-not-allowed
         ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : ''} ${className}
       `}
