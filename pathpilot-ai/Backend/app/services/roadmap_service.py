@@ -205,16 +205,29 @@ async def list_learning_paths(user_id: str, db: Client, skip: int = 0, limit: in
 
     summaries = []
     for row in (res.data or []):
-        # Count lessons via joined query
+        # Count lessons via proper two-step join: path → modules → lessons
         try:
-            lesson_res = (
-                db.table("lessons")
-                .select("completed", count="exact")
-                .eq("module_id.path_id", row["id"])
+            mod_res = (
+                db.table("modules")
+                .select("id")
+                .eq("path_id", row["id"])
                 .execute()
             )
-            total = lesson_res.count or 0
-            completed = sum(1 for l in (lesson_res.data or []) if l.get("completed"))
+            mod_ids = [m["id"] for m in (mod_res.data or [])]
+
+            if mod_ids:
+                lesson_res = (
+                    db.table("lessons")
+                    .select("completed")
+                    .in_("module_id", mod_ids)
+                    .execute()
+                )
+                lessons_data = lesson_res.data or []
+            else:
+                lessons_data = []
+
+            total = len(lessons_data)
+            completed = sum(1 for l in lessons_data if l.get("completed"))
         except Exception:
             total = 0
             completed = 0

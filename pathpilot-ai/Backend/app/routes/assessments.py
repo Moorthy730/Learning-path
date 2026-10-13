@@ -163,39 +163,37 @@ async def submit_assessment(
     )
 
 
-@router.get("/learning-paths/{path_id}/assessments", response_model=list[AssessmentResult])
-async def get_path_assessments(
-    path_id: str,
-    user_id: CurrentUserId,
-) -> list[AssessmentResult]:
-    """Return the authenticated user's assessment history for a path."""
-    db = get_admin_client()
 
-    # Verify ownership
-    await get_learning_path(path_id, user_id, db)
+@router.get("/{assessment_id}", response_model=AssessmentResult)
+async def get_assessment_result(
+    assessment_id: str,
+    user_id: CurrentUserId,
+) -> AssessmentResult:
+    """Return a single assessment result by ID."""
+    db = get_admin_client()
 
     try:
         res = (
             db.table("assessments")
             .select("*")
-            .eq("path_id", path_id)
+            .eq("id", assessment_id)
             .eq("user_id", user_id)
-            .order("created_at", desc=True)
             .execute()
         )
     except Exception as e:
-        logger.error("DB error fetching assessments: %s", type(e).__name__, exc_info=False)
-        raise DatabaseError("Failed to retrieve assessment history")
+        logger.error("DB error fetching assessment: %s", type(e).__name__, exc_info=False)
+        raise DatabaseError("Failed to retrieve assessment")
 
-    results = []
-    for row in (res.data or []):
-        total = row["total_questions"] or 1
-        results.append(AssessmentResult(
-            id=row["id"],
-            score=row["score"],
-            total_questions=total,
-            percentage=round((row["score"] / total) * 100, 1),
-            passed=round((row["score"] / total) * 100, 1) >= 70.0,
-            created_at=row["created_at"],
-        ))
-    return results
+    if not res.data:
+        raise NotFoundError("Assessment")
+
+    row = res.data[0]
+    total = row["total_questions"] or 1
+    return AssessmentResult(
+        id=row["id"],
+        score=row["score"],
+        total_questions=total,
+        percentage=round((row["score"] / total) * 100, 1),
+        passed=round((row["score"] / total) * 100, 1) >= 70.0,
+        created_at=row["created_at"],
+    )

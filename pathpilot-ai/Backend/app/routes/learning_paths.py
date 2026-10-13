@@ -17,9 +17,11 @@ from app.schemas import (
     UpdatePathRequest,
     RevisePathRequest,
     PathProgress,
+    AssessmentResult,
 )
 from app.services import roadmap_service
 from app.services.progress_service import get_path_progress
+from app.exceptions import DatabaseError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/learning-paths", tags=["learning-paths"])
@@ -106,3 +108,40 @@ async def get_progress(
     # Verify ownership first
     await roadmap_service.get_learning_path(path_id, user_id, db)
     return await get_path_progress(path_id, user_id, db)
+
+@router.get("/{path_id}/assessments", response_model=list[AssessmentResult])
+async def get_path_assessments(
+    path_id: str,
+    user_id: CurrentUserId,
+) -> list[AssessmentResult]:
+    """Return the authenticated user's assessment history for a path."""
+    db = get_admin_client()
+
+    # Verify ownership first
+    await roadmap_service.get_learning_path(path_id, user_id, db)
+
+    try:
+        res = (
+            db.table("assessments")
+            .select("*")
+            .eq("path_id", path_id)
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+    except Exception as e:
+        logger.error("DB error fetching assessments: %s", type(e).__name__, exc_info=False)
+        raise DatabaseError("Failed to retrieve assessment history")
+
+    results = []
+    for row in (res.data or []):
+        total = row["total_questions"] or 1
+        results.append(AssessmentResult(
+            id=row["id"],
+            score=row["score"],
+            total_questions=total,
+            percentage=round((row["score"] / total) * 100, 1),
+            passed=round((row["score"] / total) * 100, 1) >= 70.0,
+            created_at=row["created_at"],
+        ))
+    return results

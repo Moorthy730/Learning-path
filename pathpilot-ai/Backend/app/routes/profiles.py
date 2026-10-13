@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter
 
 from app.auth import CurrentUserId
-from app.database import get_admin_client, get_user_client
+from app.database import get_admin_client
 from app.exceptions import DatabaseError, NotFoundError
 from app.schemas import ProfileResponse, UpdateProfileRequest
 
@@ -20,7 +20,6 @@ router = APIRouter(prefix="/api/profiles", tags=["profiles"])
 @router.get("/me", response_model=ProfileResponse)
 async def get_my_profile(user_id: CurrentUserId) -> ProfileResponse:
     """Return the authenticated user's profile. Creates it if it doesn't exist."""
-    db = get_user_client
     admin = get_admin_client()
 
     try:
