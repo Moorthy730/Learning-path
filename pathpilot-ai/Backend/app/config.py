@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # ── Gemini ──────────────────────────────────────────────────────────────
     GEMINI_API_KEY: SecretStr = Field(..., description="Google Gemini API key")
     GEMINI_MODEL: str = Field(
-        default="gemini-2.0-flash",
+        default="gemini-2.5-flash",
         description="Gemini model name. Must support structured output.",
     )
 

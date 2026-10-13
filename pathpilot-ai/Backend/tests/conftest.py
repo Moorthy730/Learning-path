@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 
 # Set required env vars BEFORE importing the app
 os.environ.setdefault("GEMINI_API_KEY", "test-gemini-key-abc123")
-os.environ.setdefault("GEMINI_MODEL", "gemini-2.0-flash")
+os.environ.setdefault("GEMINI_MODEL", "gemini-2.5-flash")
 os.environ.setdefault("SUPABASE_URL", "https://test.supabase.co")
 os.environ.setdefault("SUPABASE_PUBLISHABLE_KEY", "test-publishable-key")
 os.environ.setdefault("SUPABASE_SECRET_KEY", "test-secret-key")
