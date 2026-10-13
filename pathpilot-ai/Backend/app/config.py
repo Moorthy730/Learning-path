@@ -5,6 +5,7 @@ Uses pydantic-settings so missing required variables raise a clear startup error
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Optional
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -50,6 +51,21 @@ class Settings(BaseSettings):
     )
     AI_TIMEOUT_SECONDS: int = Field(
         default=60, description="Timeout for Gemini API calls in seconds"
+    )
+
+    # ── Reminders & Notifications ─────────────────────────────────────────────
+    # Optional — app runs without these; email reminders are silently skipped.
+    RESEND_API_KEY: Optional[str] = Field(
+        default=None,
+        description="Resend.com API key for email notifications (optional)",
+    )
+    RESEND_FROM_EMAIL: str = Field(
+        default="noreply@pathpilot.ai",
+        description="From address for email reminders",
+    )
+    SCHEDULER_ENABLED: bool = Field(
+        default=True,
+        description="Enable the APScheduler reminder job",
     )
 
     @field_validator("SUPABASE_URL")

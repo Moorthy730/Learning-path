@@ -25,6 +25,8 @@ from slowapi.middleware import SlowAPIMiddleware
 from app.config import get_settings
 from app.exceptions import register_exception_handlers
 from app.routes import health, learning_paths, lessons, assessments, profiles
+from app.routes import notifications, reminders, daily_tasks
+from app.services.reminder_scheduler import start_scheduler, stop_scheduler
 
 # Configure logging — never include secrets in format string
 logging.basicConfig(
@@ -51,8 +53,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.critical("Startup configuration error: %s", str(e))
         raise
 
+    # Start the reminder scheduler (runs even when browser is closed)
+    start_scheduler()
+
     yield  # Server is running
 
+    # Graceful shutdown
+    stop_scheduler()
     logger.info("PathPilot AI backend shutting down")
 
 
@@ -103,6 +110,9 @@ def create_app() -> FastAPI:
     app.include_router(learning_paths.router)
     app.include_router(lessons.router)
     app.include_router(assessments.router)
+    app.include_router(notifications.router)
+    app.include_router(reminders.router)
+    app.include_router(daily_tasks.router)
 
     return app
 

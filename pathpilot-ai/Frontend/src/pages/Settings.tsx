@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sun, Moon, Trash2, LogOut, AlertTriangle } from 'lucide-react';
+import { Sun, Moon, Trash2, LogOut, AlertTriangle, Bell, BellOff, Clock, Globe } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { resetDemoData } from '../services/storageService';
+import { reminderApi } from '../services/notificationService';
+import type { ReminderPreferences } from '../services/notificationService';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import type { LearningFormat } from '../types';
@@ -40,6 +42,53 @@ export default function Settings() {
   const [preferredFormat, setPreferredFormat] = useState<LearningFormat>(user?.preferredFormat ?? 'mixed');
   const [resetConfirm, setResetConfirm] = useState(false);
   const [nameEditing, setNameEditing] = useState(false);
+
+  // ── Reminder preferences ──────────────────────────────────────────────────
+  const [remPrefs, setRemPrefs] = useState<ReminderPreferences | null>(null);
+  const [remLoading, setRemLoading] = useState(false);
+  const [remSaving, setRemSaving] = useState(false);
+  const [remError, setRemError] = useState<string | null>(null);
+  const isDemo = user?.isDemo;
+
+  useEffect(() => {
+    if (isDemo) return;
+    setRemLoading(true);
+    reminderApi.getPreferences()
+      .then(setRemPrefs)
+      .catch(() => setRemError('Could not load reminder settings'))
+      .finally(() => setRemLoading(false));
+  }, [isDemo]);
+
+  const handleSaveReminders = async () => {
+    if (!remPrefs || isDemo) return;
+    setRemSaving(true);
+    setRemError(null);
+    try {
+      const updated = await reminderApi.updatePreferences({
+        enabled: remPrefs.enabled,
+        reminder_time: remPrefs.reminder_time,
+        timezone: remPrefs.timezone,
+        email_enabled: remPrefs.email_enabled,
+      });
+      setRemPrefs(updated);
+      addToast({ type: 'success', title: 'Reminder settings saved' });
+    } catch {
+      setRemError('Failed to save reminder settings');
+      addToast({ type: 'error', title: 'Could not save settings' });
+    } finally {
+      setRemSaving(false);
+    }
+  };
+
+  // Common IANA timezones for the dropdown
+  const TIMEZONES = [
+    'UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+    'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Asia/Kolkata', 'Asia/Dubai',
+    'Asia/Singapore', 'Asia/Tokyo', 'Australia/Sydney', 'Pacific/Auckland',
+  ];
+
+  // Detect user's browser timezone as a suggestion
+  const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const handleSaveName = () => {
     if (!user) return;
@@ -142,6 +191,123 @@ export default function Settings() {
         <div className="flex justify-end">
           <Button size="sm" onClick={handleSavePrefs} id="settings-save-prefs">Save Preferences</Button>
         </div>
+      </Section>
+
+      {/* Notifications & Reminders */}
+      <Section title="Notifications & Reminders">
+        {isDemo ? (
+          <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-700 dark:text-amber-300">
+              Reminder settings require a real account. Sign in to configure daily notifications.
+            </p>
+          </div>
+        ) : remLoading ? (
+          <div className="space-y-3">
+            {[1,2,3].map(i => <div key={i} className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />)}
+          </div>
+        ) : remError && !remPrefs ? (
+          <p className="text-sm text-red-500">{remError}</p>
+        ) : remPrefs ? (
+          <>
+            <Field
+              label="Daily Reminders"
+              description="Get notified when you have pending tasks at the configured time"
+            >
+              <button
+                id="reminder-toggle-btn"
+                onClick={() => setRemPrefs(p => p ? { ...p, enabled: !p.enabled } : p)}
+                aria-pressed={remPrefs.enabled}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#26658C] focus:ring-offset-2 ${
+                  remPrefs.enabled ? 'bg-[#26658C]' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                  remPrefs.enabled ? 'translate-x-6' : 'translate-x-1'
+                }`} />
+              </button>
+            </Field>
+
+            <Field
+              label="Reminder Time"
+              description="Time to check for pending tasks and send a reminder"
+            >
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <input
+                  id="reminder-time-input"
+                  type="time"
+                  value={remPrefs.reminder_time}
+                  onChange={e => setRemPrefs(p => p ? { ...p, reminder_time: e.target.value } : p)}
+                  disabled={!remPrefs.enabled}
+                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#26658C] disabled:opacity-50"
+                />
+              </div>
+            </Field>
+
+            <Field
+              label="Timezone"
+              description="Your local timezone for scheduling reminders"
+            >
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-gray-400" />
+                <select
+                  id="reminder-timezone-select"
+                  value={remPrefs.timezone}
+                  onChange={e => setRemPrefs(p => p ? { ...p, timezone: e.target.value } : p)}
+                  disabled={!remPrefs.enabled}
+                  className="px-2 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#26658C] disabled:opacity-50"
+                >
+                  {!TIMEZONES.includes(browserTz) && (
+                    <option value={browserTz}>{browserTz} (detected)</option>
+                  )}
+                  {TIMEZONES.map(tz => (
+                    <option key={tz} value={tz}>{tz}</option>
+                  ))}
+                </select>
+              </div>
+            </Field>
+
+            <Field
+              label="Email Reminders"
+              description="Also send an email when you have pending tasks (requires email provider setup)"
+            >
+              <button
+                id="email-reminder-toggle-btn"
+                onClick={() => setRemPrefs(p => p ? { ...p, email_enabled: !p.email_enabled } : p)}
+                aria-pressed={remPrefs.email_enabled}
+                disabled={!remPrefs.enabled}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#26658C] focus:ring-offset-2 disabled:opacity-50 ${
+                  remPrefs.email_enabled ? 'bg-[#26658C]' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                  remPrefs.email_enabled ? 'translate-x-6' : 'translate-x-1'
+                }`} />
+              </button>
+            </Field>
+
+            {remError && <p className="text-xs text-red-500">{remError}</p>}
+
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+                {remPrefs.enabled ? (
+                  <><Bell className="w-3 h-3 text-[#26658C]" /> Reminders ON at {remPrefs.reminder_time}</>  
+                ) : (
+                  <><BellOff className="w-3 h-3" /> Reminders disabled</>
+                )}
+              </div>
+              <Button
+                size="sm"
+                onClick={handleSaveReminders}
+                id="save-reminders-btn"
+                disabled={remSaving}
+              >
+                {remSaving ? 'Saving…' : 'Save Reminders'}
+              </Button>
+            </div>
+          </>
+        ) : null}
       </Section>
 
       {/* Theme */}

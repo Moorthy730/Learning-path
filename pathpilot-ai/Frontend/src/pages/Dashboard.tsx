@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import ProgressBar from '../components/ui/ProgressBar';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
+import DailyTaskChecklist from '../components/notifications/DailyTaskChecklist';
 
 function StatCard({ label, value, sub, icon: Icon, color }: { label: string; value: string | number; sub?: string; icon: React.ComponentType<{ className?: string }>; color: string }) {
   return (
@@ -148,6 +149,8 @@ export default function Dashboard() {
 
         {/* Right column */}
         <div className="space-y-6">
+          {/* Daily Task Checklist */}
+          <DailyTaskChecklist />
           {/* Overall Progress */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Overall Progress</h2>
