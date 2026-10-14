@@ -70,15 +70,7 @@ function LessonItem({
               ))}
             </div>
           ) : (
-            <a
-              href={`https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(lesson.title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg font-medium text-[#D85C4A] dark:text-[#E9825C] bg-[#FFF0EE] dark:bg-[#D85C4A]/10 border border-[#F9E3B5] dark:border-[#D85C4A]/20 hover:bg-[#F9E3B5]/60 dark:hover:bg-[#D85C4A]/20 transition-all shadow-sm"
-            >
-              <ExternalLink className="w-3 h-3 flex-shrink-0" />
-              <span>Explore {lesson.title} Guide</span>
-            </a>
+            <span className="text-xs text-gray-400 dark:text-gray-500">No verified resource is available for this lesson yet.</span>
           )}
         </div>
       </div>

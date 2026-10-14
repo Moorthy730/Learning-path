@@ -80,7 +80,7 @@ def test_resolve_lesson_resource_keeps_valid_url():
     assert resolved == valid
 
 
-def test_resolve_lesson_resource_generates_fallback_for_none():
+def test_resolve_lesson_resource_uses_lesson_specific_curated_fallbacks():
     resolved = resolve_lesson_resource(
         lesson_title="Python Data Types",
         raw_url=None,
@@ -90,13 +90,30 @@ def test_resolve_lesson_resource_generates_fallback_for_none():
     assert "python.org" in resolved
 
 
-def test_build_curated_resources_always_returns_resources():
+def test_video_resource_without_verified_metadata_is_not_fabricated():
+    resolved = resolve_lesson_resource(
+        lesson_title="A bespoke lesson without a catalog match",
+        raw_url=None,
+        format_preference="video",
+    )
+    assert resolved is None
+
+
+def test_unmatched_article_does_not_fabricate_a_search_link():
+    resolved = resolve_lesson_resource(
+        lesson_title="A bespoke lesson without a catalog match",
+        raw_url=None,
+        format_preference="articles",
+    )
+    assert resolved is None
+
+
+def test_build_curated_resources_returns_only_verified_matches():
     # Predefined keyword
     py_res = build_curated_resources("python", "mixed")
     assert len(py_res) >= 1
     assert any("python" in r["title"].lower() for r in py_res)
 
-    # Custom or unknown domain
+    # Unknown domains have no claimed resource until one is verified.
     custom_res = build_curated_resources("Quantum Computing Architecture", "video")
-    assert len(custom_res) >= 1
-    assert any("http" in r["url"] for r in custom_res)
+    assert custom_res == []

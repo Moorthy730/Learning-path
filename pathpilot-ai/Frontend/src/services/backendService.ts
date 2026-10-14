@@ -144,7 +144,18 @@ export function backendPathToFrontend(bp: BackendLearningPath): LearningPath {
         completed: mod.lessons.length > 0 && mod.lessons.every((l) => l.completed),
         expanded: false,
         lessons: mod.lessons.map((l) => {
-          const resUrl = l.resource_url || `https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(l.title)}`;
+          if (!l.resource_url) {
+            return {
+              id: l.id,
+              title: l.title,
+              description: l.description,
+              duration: `${l.estimated_hours}h`,
+              completed: l.completed,
+              type: 'lesson' as const,
+              resources: [],
+            };
+          }
+          const resUrl = l.resource_url;
           const resType = inferResourceType(resUrl);
           return {
             id: l.id,

@@ -218,7 +218,7 @@ def get_fallback_resource_for_lesson(
     module_title: str = "",
     career_goal: str = "",
     format_preference: str = "mixed",
-) -> dict[str, str]:
+) -> Optional[dict[str, str]]:
     """
     Produce a verified, high-quality educational resource URL and title for a lesson
     by matching lesson, module, and career domain context.
@@ -233,7 +233,11 @@ def get_fallback_resource_for_lesson(
                 "url": url,
             }
 
-    # 2. Topic-driven educational search URL fallback
+    # No discovery provider is configured. Do not manufacture a search result
+    # or a YouTube URL and present it as a lesson-specific resource.
+    return None
+
+    # Legacy generic-search fallback retained below for migration context.
     clean_topic = re.sub(r"[^\w\s-]", "", lesson_title).strip()
     encoded_topic = quote_plus(clean_topic or career_goal or "programming")
 
@@ -266,13 +270,13 @@ def resolve_lesson_resource(
     career_goal: str = "",
     raw_url: Optional[str] = None,
     format_preference: str = "mixed",
-) -> str:
+) -> Optional[str]:
     """
     Validate raw_url from AI; if missing or invalid, generate an intelligent,
     topic-appropriate fallback URL from a trusted educational source.
     """
     sanitized = sanitize_resource_url(raw_url)
-    if sanitized:
+    if sanitized and is_trusted_domain(sanitized):
         return sanitized
 
     fallback = get_fallback_resource_for_lesson(
@@ -281,7 +285,7 @@ def resolve_lesson_resource(
         career_goal=career_goal,
         format_preference=format_preference,
     )
-    return fallback["url"]
+    return fallback["url"] if fallback else None
 
 
 def build_curated_resources(topic: str, format_preference: str = "mixed") -> list[dict]:
@@ -296,6 +300,10 @@ def build_curated_resources(topic: str, format_preference: str = "mixed") -> lis
             suggestions.append({"title": title, "url": url})
             if len(suggestions) >= 3:
                 break
+
+    # Unknown topics require a real search/discovery provider; never return a
+    # generated search-page URL as if it were a verified learning resource.
+    return suggestions[:3]
 
     if len(suggestions) < 3:
         clean_topic = re.sub(r"[^\w\s-]", "", topic).strip()
@@ -316,4 +324,3 @@ def build_curated_resources(topic: str, format_preference: str = "mixed") -> lis
             })
 
     return suggestions[:3]
-

@@ -622,6 +622,9 @@ function generateCuratedResourcesForLesson(
     });
   } else {
     // Dynamic topic fallback for ANY custom domain / course / technology / skill
+    // No verified discovery provider is available in demo mode. Returning no
+    // resource is safer than presenting a generated search page as a lesson.
+    return resources;
     const cleanTopic = lessonTitle.replace(/[^\w\s-]/g, '').trim() || careerGoal;
     if (format === 'video') {
       resources.push({

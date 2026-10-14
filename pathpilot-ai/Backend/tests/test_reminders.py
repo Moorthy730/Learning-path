@@ -11,6 +11,26 @@ from fastapi.testclient import TestClient
 AUTH = {"Authorization": "Bearer valid-token"}
 
 
+def test_email_reminder_uses_configured_frontend_origin():
+    """Reminder emails must link to the deployed frontend, not localhost."""
+    from app.services.notification_service import send_email_reminder
+
+    settings = MagicMock(RESEND_API_KEY="test-key", FRONTEND_ORIGIN="https://app.pathpilot.test/")
+    response = MagicMock(status_code=201)
+
+    with patch("app.services.notification_service.get_settings", return_value=settings), \
+         patch("app.services.notification_service.httpx.AsyncClient") as client_cls:
+        client = AsyncMock()
+        client.post.return_value = response
+        client_cls.return_value.__aenter__ = AsyncMock(return_value=client)
+        client_cls.return_value.__aexit__ = AsyncMock(return_value=None)
+
+        sent = asyncio.run(send_email_reminder("learner@example.com", "Learner", [{"title": "Read"}]))
+
+    assert sent is True
+    assert 'href="https://app.pathpilot.test/dashboard"' in client.post.call_args.kwargs["json"]["html"]
+
+
 def _app_client(user_id="user-123"):
     mock_admin = MagicMock()
     mock_admin.auth.get_user.return_value = MagicMock(user=MagicMock(id=user_id))

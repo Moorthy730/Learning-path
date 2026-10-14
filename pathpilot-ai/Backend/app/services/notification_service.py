@@ -92,7 +92,7 @@ async def send_email_reminder(
           {task_list_html}
         </ul>
         {more_note}
-        <a href="http://localhost:5173/dashboard"
+        <a href="{settings.FRONTEND_ORIGIN.rstrip('/')}/dashboard"
            style="display:inline-block;margin-top:16px;padding:10px 20px;
                   background:#26658C;color:white;border-radius:8px;
                   text-decoration:none;font-weight:600">
