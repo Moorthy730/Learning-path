@@ -1,4 +1,4 @@
-﻿import type { LearningPath, SkillLevel, LearningFormat, LearningObjective } from '../types';
+import type { LearningPath, SkillLevel, LearningFormat, LearningObjective, LearningResource } from '../types';
 
 // ─── Helper to generate a unique ID ──────────────────────────────────────────
 let idCounter = 1;
@@ -99,7 +99,7 @@ function fullStackTemplate(
             {
               id: uid('les'), title: 'Stage 1 Project: Portfolio Page', description: 'Build a personal portfolio page using only HTML, CSS, and JavaScript.',
               duration: '4 hr', completed: false, type: 'project' as const,
-              resources: [],
+              resources: [{ id: uid('res'), title: 'Portfolio Project Guide – freeCodeCamp', type: 'article' as const, url: 'https://www.freecodecamp.org/news/how-to-build-a-portfolio-website/', duration: '1 hr' }],
             },
           ],
         }] : []),
@@ -156,7 +156,7 @@ function fullStackTemplate(
             {
               id: uid('les'), title: 'Checkpoint: React Mini-App', description: 'Build a task manager app demonstrating React fundamentals.',
               duration: '3 hr', completed: false, type: 'checkpoint' as const,
-              resources: [],
+              resources: [{ id: uid('res'), title: 'Building a Task Manager with React', type: 'video' as const, url: 'https://www.youtube.com/watch?v=w7ejDZ8SWv8', duration: '1 hr' }],
             },
           ],
         },
@@ -283,7 +283,7 @@ function fullStackTemplate(
             {
               id: uid('les'), title: 'Final Capstone: Job Board App', description: 'Build and deploy a full-stack job board application for your portfolio.',
               duration: '10 hr', completed: false, type: 'project' as const,
-              resources: [],
+              resources: [{ id: uid('res'), title: 'Full-Stack Web App Project Guide', type: 'article' as const, url: 'https://developer.mozilla.org/en-US/docs/Learn_web_development', duration: '2 hr' }],
             },
           ],
         },
@@ -353,7 +353,7 @@ function aiMlTemplate(
             { id: uid('les'), title: 'Linear & Logistic Regression', description: 'Understand the math and implementation of regression models.', duration: '3 hr', completed: false, type: 'lesson' as const, resources: [{ id: uid('res'), title: 'Scikit-learn Guide', type: 'documentation' as const, url: 'https://scikit-learn.org/stable/supervised_learning.html', duration: '2 hr' }] },
             { id: uid('les'), title: 'Decision Trees & Random Forests', description: 'Ensemble methods for classification and regression.', duration: '2 hr', completed: false, type: 'lesson' as const, resources: [{ id: uid('res'), title: 'Ensemble Methods Tutorial', type: 'video' as const, url: 'https://www.youtube.com/watch?v=J4Wdy0Wc_xQ', duration: '1.5 hr' }] },
             { id: uid('les'), title: 'Model Evaluation & Cross-Validation', description: 'Accuracy, precision, recall, F1, and k-fold CV.', duration: '2 hr', completed: false, type: 'lesson' as const, resources: [{ id: uid('res'), title: 'Model Evaluation Guide', type: 'article' as const, url: 'https://machinelearningmastery.com/evaluate-skill-deep-learning-models/', duration: '1 hr' }] },
-            { id: uid('les'), title: 'Project: Titanic Survival Prediction', description: 'Apply ML to a classic dataset using scikit-learn.', duration: '5 hr', completed: false, type: 'project' as const, resources: [] },
+            { id: uid('les'), title: 'Project: Titanic Survival Prediction', description: 'Apply ML to a classic dataset using scikit-learn.', duration: '5 hr', completed: false, type: 'project' as const, resources: [{ id: uid('res'), title: 'Kaggle Titanic Survival Walkthrough', type: 'course' as const, url: 'https://www.kaggle.com/c/titanic', duration: '2 hr' }] },
           ],
         },
       ],
@@ -395,7 +395,7 @@ function aiMlTemplate(
           lessons: [
             { id: uid('les'), title: 'Building ML APIs with FastAPI', description: 'Serve predictions via a REST API.', duration: '2 hr', completed: false, type: 'lesson' as const, resources: [{ id: uid('res'), title: 'FastAPI + ML Tutorial', type: 'article' as const, url: 'https://fastapi.tiangolo.com/tutorial/', duration: '1.5 hr' }] },
             { id: uid('les'), title: 'Containerizing with Docker', description: 'Package your ML app for portable deployment.', duration: '2 hr', completed: false, type: 'lesson' as const, resources: [{ id: uid('res'), title: 'Docker for ML Engineers', type: 'video' as const, url: 'https://www.youtube.com/watch?v=0H2miBK_gAk', duration: '1.5 hr' }] },
-            { id: uid('les'), title: 'Capstone: End-to-End ML Pipeline', description: 'Build a sentiment analysis app and deploy to the cloud.', duration: '8 hr', completed: false, type: 'project' as const, resources: [] },
+            { id: uid('les'), title: 'Capstone: End-to-End ML Pipeline', description: 'Build a sentiment analysis app and deploy to the cloud.', duration: '8 hr', completed: false, type: 'project' as const, resources: [{ id: uid('res'), title: 'MLOps Pipeline Deployment Guide', type: 'documentation' as const, url: 'https://developers.google.com/machine-learning/guides/rules-of-ml', duration: '2 hr' }] },
           ],
         },
       ],
@@ -513,6 +513,152 @@ function dataAnalystTemplate(
   };
 }
 
+// ─── Resource Generator for Generic & Custom Paths ───────────────────────────
+function generateCuratedResourcesForLesson(
+  lessonTitle: string,
+  careerGoal: string,
+  format: LearningFormat = 'mixed'
+): LearningResource[] {
+  const text = `${lessonTitle} ${careerGoal}`.toLowerCase();
+  const resources: LearningResource[] = [];
+
+  if (text.includes('figma') || text.includes('wirefram') || text.includes('prototyp') || text.includes('ui/ux') || text.includes('design system')) {
+    resources.push({
+      id: uid('res'),
+      title: 'Figma Learn & Design System Guide',
+      type: 'documentation',
+      url: 'https://help.figma.com/hc/en-us/categories/360002051613-Learn-Design',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'Nielsen Norman Group UX Research',
+      type: 'article',
+      url: 'https://www.nngroup.com/articles/',
+      duration: '30 min',
+    });
+  } else if (text.includes('security') || text.includes('cyber') || text.includes('owasp') || text.includes('vulnerability') || text.includes('wireshark') || text.includes('nmap') || text.includes('cryptography')) {
+    resources.push({
+      id: uid('res'),
+      title: 'OWASP Top 10 Security Project',
+      type: 'documentation',
+      url: 'https://owasp.org/www-project-top-ten/',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'PortSwigger Web Security Academy',
+      type: 'course',
+      url: 'https://portswigger.net/web-security',
+      duration: '1 hr',
+    });
+  } else if (text.includes('test') || text.includes('qa') || text.includes('selenium') || text.includes('cypress') || text.includes('playwright') || text.includes('postman')) {
+    resources.push({
+      id: uid('res'),
+      title: 'Cypress End-to-End Testing Documentation',
+      type: 'documentation',
+      url: 'https://docs.cypress.io/guides/overview/why-cypress',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'Martin Fowler: Practical Test Pyramid',
+      type: 'article',
+      url: 'https://martinfowler.com/articles/practical-test-pyramid.html',
+      duration: '35 min',
+    });
+  } else if (text.includes('cloud') || text.includes('aws') || text.includes('azure') || text.includes('docker') || text.includes('kubernetes') || text.includes('terraform') || text.includes('devops')) {
+    resources.push({
+      id: uid('res'),
+      title: 'Docker Documentation & Getting Started',
+      type: 'documentation',
+      url: 'https://docs.docker.com/get-started/',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'AWS Cloud Architecture & Services',
+      type: 'course',
+      url: 'https://aws.amazon.com/getting-started/',
+      duration: '1 hr',
+    });
+  } else if (text.includes('mobile') || text.includes('react native') || text.includes('flutter') || text.includes('ios') || text.includes('android')) {
+    resources.push({
+      id: uid('res'),
+      title: 'React Native Official Documentation',
+      type: 'documentation',
+      url: 'https://reactnative.dev/docs/getting-started',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'Flutter Codelabs & Guides',
+      type: 'course',
+      url: 'https://docs.flutter.dev/',
+      duration: '1 hr',
+    });
+  } else if (text.includes('python')) {
+    resources.push({
+      id: uid('res'),
+      title: 'Python Official Documentation & Tutorial',
+      type: 'documentation',
+      url: 'https://docs.python.org/3/tutorial/',
+      duration: '1 hr',
+    });
+  } else if (text.includes('react') || text.includes('frontend') || text.includes('javascript') || text.includes('typescript')) {
+    resources.push({
+      id: uid('res'),
+      title: 'MDN Web Docs — Modern JavaScript & Web APIs',
+      type: 'documentation',
+      url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+      duration: '45 min',
+    });
+    resources.push({
+      id: uid('res'),
+      title: 'React Official Documentation',
+      type: 'documentation',
+      url: 'https://react.dev/learn',
+      duration: '1 hr',
+    });
+  } else {
+    // Dynamic topic fallback for ANY custom domain / course / technology / skill
+    const cleanTopic = lessonTitle.replace(/[^\w\s-]/g, '').trim() || careerGoal;
+    if (format === 'video') {
+      resources.push({
+        id: uid('res'),
+        title: `${lessonTitle} — Video Tutorial`,
+        type: 'video',
+        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanTopic)}+tutorial`,
+        duration: '45 min',
+      });
+      resources.push({
+        id: uid('res'),
+        title: `${careerGoal} Guide & Best Practices`,
+        type: 'documentation',
+        url: 'https://roadmap.sh',
+        duration: '30 min',
+      });
+    } else {
+      resources.push({
+        id: uid('res'),
+        title: `${lessonTitle} — Study Guide`,
+        type: 'article',
+        url: `https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(cleanTopic)}`,
+        duration: '45 min',
+      });
+      resources.push({
+        id: uid('res'),
+        title: `${lessonTitle} — Video Walkthrough`,
+        type: 'video',
+        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanTopic)}+tutorial`,
+        duration: '35 min',
+      });
+    }
+  }
+
+  return resources;
+}
+
 // ─── Generic Template for Other Careers ──────────────────────────────────────
 function genericTemplate(
   careerGoal: string,
@@ -533,42 +679,175 @@ function genericTemplate(
 
   const meta = careerMap[careerGoal] ?? { icon: '🎯', color: 'indigo', description: `A structured learning roadmap to help you achieve your goal of becoming a ${careerGoal}.`, skills: ['Core Concepts', 'Tools', 'Best Practices', 'Projects'] };
 
+  // Generate specialized lessons based on career
+  const isUIUX = careerGoal === 'UI/UX Designer';
+  const isSecurity = careerGoal === 'Cybersecurity Analyst';
+  const isTester = careerGoal === 'Software Tester';
+  const isCloud = careerGoal === 'Cloud Engineer';
+  const isMobile = careerGoal === 'Mobile App Developer';
+
   const stages = [
     {
-      id: uid('stage'), number: 1, title: `${careerGoal} Fundamentals`, description: 'Build the foundational knowledge required for this career.', estimatedWeeks: 3,
+      id: uid('stage'),
+      number: 1,
+      title: isUIUX
+        ? 'UI/UX Fundamentals & User Research'
+        : isSecurity
+        ? 'Networking, Linux & Security Fundamentals'
+        : isTester
+        ? 'QA Testing Principles & Manual Test Design'
+        : isCloud
+        ? 'Cloud Architecture & Linux Foundations'
+        : isMobile
+        ? 'Mobile Development Fundamentals & UI'
+        : `${careerGoal} Fundamentals`,
+      description: 'Build the foundational knowledge and core concepts required for this domain.',
+      estimatedWeeks: 3,
       modules: [
         {
-          id: uid('mod'), title: 'Core Concepts', description: 'Essential theory and principles of the field.', completed: false, expanded: false,
+          id: uid('mod'),
+          title: isUIUX ? 'Design Thinking & Research' : isSecurity ? 'Network & System Security' : isTester ? 'Test Planning & Bug Life Cycle' : isCloud ? 'Cloud Basics & Compute' : isMobile ? 'Mobile UI Layouts & Components' : 'Core Concepts',
+          description: 'Essential theory, principles, and fundamental skills.',
+          completed: false,
+          expanded: false,
           lessons: [
-            { id: uid('les'), title: 'Introduction & Industry Overview', description: `Get oriented in the ${careerGoal} landscape, key tools, and industry expectations.`, duration: '1 hr', completed: false, type: 'lesson' as const, resources: [] },
-            { id: uid('les'), title: 'Fundamental Skills', description: `Master the core skill set every ${careerGoal} needs.`, duration: '2 hr', completed: false, type: 'lesson' as const, resources: [] },
-            { id: uid('les'), title: 'Hands-on Practice: Starter Project', description: 'Apply your foundational knowledge in a guided starter project.', duration: '4 hr', completed: false, type: 'project' as const, resources: [] },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'User Research Methods & Personas' : isSecurity ? 'TCP/IP, OSI Model & Wireshark' : isTester ? 'Test Case Writing & Bug Reports' : isCloud ? 'Cloud Service Models (IaaS, PaaS, SaaS)' : isMobile ? 'Mobile UI Components & Styling' : `${careerGoal} Orientation & Core Principles`,
+              description: `Master the essential basics every ${careerGoal} practitioner needs.`,
+              duration: '1.5 hr',
+              completed: false,
+              type: 'lesson' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'User Research' : isSecurity ? 'Wireshark Networking' : isTester ? 'Test Case Design' : isCloud ? 'Cloud Architecture' : isMobile ? 'Mobile UI Components' : `${careerGoal} Fundamentals`, careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Wireframing & Low-Fidelity Layouts in Figma' : isSecurity ? 'Linux Security & User Permissions' : isTester ? 'API Testing with Postman' : isCloud ? 'Linux Administration for Cloud' : isMobile ? 'State Management & Navigation' : 'Key Methods & Industry Standards',
+              description: 'Learn foundational industry workflows and practical skills.',
+              duration: '2 hr',
+              completed: false,
+              type: 'lesson' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'Figma Wireframing' : isSecurity ? 'Linux Security' : isTester ? 'Postman API Testing' : isCloud ? 'Linux Cloud' : isMobile ? 'Mobile Navigation' : 'Methods and Standards', careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Hands-on Project: Wireframe a Mobile Onboarding Flow' : isSecurity ? 'Hands-on Lab: Network Packet Analysis' : isTester ? 'Project: Test Plan & Automated API Suite' : isCloud ? 'Hands-on Lab: Deploy a Virtual Server' : isMobile ? 'Project: Multi-Screen Mobile App Prototype' : 'Hands-on Practice: Starter Project',
+              description: 'Apply your foundational knowledge in a guided starter project.',
+              duration: '4 hr',
+              completed: false,
+              type: 'project' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'Figma Project' : isSecurity ? 'Network Security Project' : isTester ? 'QA Test Project' : isCloud ? 'Cloud Deployment Project' : isMobile ? 'Mobile App Project' : 'Starter Project', careerGoal, learningFormat),
+            },
           ],
         },
       ],
     },
     {
-      id: uid('stage'), number: 2, title: 'Tools & Technologies', description: 'Learn industry-standard tools and workflows.', estimatedWeeks: 4,
+      id: uid('stage'),
+      number: 2,
+      title: isUIUX
+        ? 'Design Systems & Interactive Prototyping'
+        : isSecurity
+        ? 'Vulnerability Assessment & Web Defense'
+        : isTester
+        ? 'Test Automation with Cypress & Selenium'
+        : isCloud
+        ? 'Containers & Infrastructure as Code'
+        : isMobile
+        ? 'Device APIs & Native Features'
+        : 'Tools & Technologies',
+      description: 'Master industry-standard tooling, automation, and advanced workflows.',
+      estimatedWeeks: 4,
       modules: [
         {
-          id: uid('mod'), title: 'Primary Tooling', description: `Master the tools commonly used by professional ${careerGoal}s.`, completed: false, expanded: false,
+          id: uid('mod'),
+          title: isUIUX ? 'Component Libraries & Prototyping' : isSecurity ? 'OWASP & Threat Modeling' : isTester ? 'Automated Test Suites' : isCloud ? 'Docker & Kubernetes' : isMobile ? 'Data Fetching & Offline Storage' : 'Primary Tooling',
+          description: `Master tools and workflows commonly used by professional ${careerGoal}s.`,
+          completed: false,
+          expanded: false,
           lessons: [
-            { id: uid('les'), title: 'Tool Setup & Configuration', description: 'Install and configure your development environment.', duration: '1 hr', completed: false, type: 'lesson' as const, resources: [] },
-            { id: uid('les'), title: 'Core Workflows & Best Practices', description: 'Learn standard workflows and professional best practices.', duration: '2 hr', completed: false, type: 'lesson' as const, resources: [] },
-            { id: uid('les'), title: 'Intermediate Project', description: 'Build a real-world project using the tools you\'ve learned.', duration: '6 hr', completed: false, type: 'project' as const, resources: [] },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Figma Auto Layout & Reusable Variants' : isSecurity ? 'OWASP Top 10 Web Vulnerabilities' : isTester ? 'Cypress End-to-End Test Automation' : isCloud ? 'Docker Containerization & Dockerfiles' : isMobile ? 'Accessing Device Camera & Local Storage' : 'Tool Setup & Core Configuration',
+              description: 'Install, configure, and operate essential tools in real scenarios.',
+              duration: '2 hr',
+              completed: false,
+              type: 'lesson' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'Figma Auto Layout' : isSecurity ? 'OWASP Top 10' : isTester ? 'Cypress Testing' : isCloud ? 'Docker Containerization' : isMobile ? 'Device APIs' : 'Tool Setup', careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Usability Testing & Design Handoff' : isSecurity ? 'Vulnerability Scanning with Nmap' : isTester ? 'Integration Testing & Test Frameworks' : isCloud ? 'Kubernetes Pods & Deployments' : isMobile ? 'REST API Integration & Authentication' : 'Standard Workflows & Best Practices',
+              description: 'Learn standard workflows, teamwork handoffs, and production practices.',
+              duration: '2.5 hr',
+              completed: false,
+              type: 'lesson' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'Usability Testing' : isSecurity ? 'Nmap Scanning' : isTester ? 'Selenium Testing' : isCloud ? 'Kubernetes' : isMobile ? 'REST API Auth' : 'Workflows and Best Practices', careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Intermediate Project: Interactive E-Commerce Prototype' : isSecurity ? 'Lab: Web Application Vulnerability Audit' : isTester ? 'Project: Complete Automated E2E Test Suite' : isCloud ? 'Project: Containerized Multi-Tier Web Architecture' : isMobile ? 'Project: Full-Stack Mobile CRUD App' : 'Intermediate Guided Project',
+              description: 'Build a production-grade project using the tools you have mastered.',
+              duration: '6 hr',
+              completed: false,
+              type: 'project' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'E-Commerce Prototype' : isSecurity ? 'Vulnerability Audit' : isTester ? 'E2E Testing Project' : isCloud ? 'Cloud Architecture Project' : isMobile ? 'Mobile App Project' : 'Intermediate Project', careerGoal, learningFormat),
+            },
           ],
         },
       ],
     },
     {
-      id: uid('stage'), number: 3, title: 'Advanced Concepts & Portfolio', description: 'Deepen your expertise and build a professional portfolio.', estimatedWeeks: 4,
+      id: uid('stage'),
+      number: 3,
+      title: isUIUX
+        ? 'Advanced UX Strategy & Capstone Portfolio'
+        : isSecurity
+        ? 'Security Auditing & Capstone Defense'
+        : isTester
+        ? 'CI/CD Test Automation & Performance'
+        : isCloud
+        ? 'DevOps Automation & Cloud Capstone'
+        : isMobile
+        ? 'App Store Deployment & Performance'
+        : 'Advanced Concepts & Portfolio',
+      description: 'Deepen your expertise, tackle complex real-world scenarios, and build a capstone.',
+      estimatedWeeks: 4,
       modules: [
         {
-          id: uid('mod'), title: 'Advanced Skills', description: 'Level up with advanced techniques used by professionals.', completed: false, expanded: false,
+          id: uid('mod'),
+          title: isUIUX ? 'Advanced UX & Case Studies' : isSecurity ? 'Incident Response & SIEM' : isTester ? 'Performance & Pipeline Testing' : isCloud ? 'CI/CD & Infrastructure as Code' : isMobile ? 'Publishing & Optimization' : 'Advanced Skills',
+          description: 'Level up with advanced techniques and capstone execution.',
+          completed: false,
+          expanded: false,
           lessons: [
-            { id: uid('les'), title: 'Advanced Topics', description: `Explore advanced ${careerGoal} concepts and real-world challenges.`, duration: '3 hr', completed: false, type: 'lesson' as const, resources: [] },
-            { id: uid('les'), title: 'Knowledge Checkpoint', description: 'Review and test your understanding of key concepts.', duration: '1 hr', completed: false, type: 'checkpoint' as const, resources: [] },
-            { id: uid('les'), title: 'Capstone Portfolio Project', description: `Build a comprehensive project to showcase your ${careerGoal} skills to employers.`, duration: '8 hr', completed: false, type: 'project' as const, resources: [] },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Accessibility (WCAG) & Dark Mode Systems' : isSecurity ? 'SIEM Log Analysis & Threat Detection' : isTester ? 'Performance Testing with k6 / Postman' : isCloud ? 'Terraform Infrastructure as Code' : isMobile ? 'Performance Profiling & Bundle Size Optimization' : 'Advanced Industry Topics',
+              description: `Explore advanced ${careerGoal} challenges and architectural best practices.`,
+              duration: '3 hr',
+              completed: false,
+              type: 'lesson' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'Accessibility WCAG' : isSecurity ? 'SIEM Log Analysis' : isTester ? 'Performance Testing' : isCloud ? 'Terraform' : isMobile ? 'Mobile Optimization' : 'Advanced Topics', careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: 'Comprehensive Knowledge Checkpoint',
+              description: 'Assess and validate your core competencies before portfolio finalization.',
+              duration: '1 hr',
+              completed: false,
+              type: 'checkpoint' as const,
+              resources: generateCuratedResourcesForLesson('Knowledge Checkpoint', careerGoal, learningFormat),
+            },
+            {
+              id: uid('les'),
+              title: isUIUX ? 'Capstone: Comprehensive UX Case Study & Portfolio' : isSecurity ? 'Capstone: Full Enterprise Security Audit Report' : isTester ? 'Capstone: Continuous Testing Pipeline for Web App' : isCloud ? 'Capstone: Automated Cloud Infrastructure Deployment' : isMobile ? 'Capstone: Production-Ready Mobile App for App Store' : `Capstone Portfolio Project for ${careerGoal}`,
+              description: `Build a comprehensive project to showcase your ${careerGoal} skills to employers.`,
+              duration: '8 hr',
+              completed: false,
+              type: 'project' as const,
+              resources: generateCuratedResourcesForLesson(isUIUX ? 'UX Portfolio Case Study' : isSecurity ? 'Security Audit Report' : isTester ? 'CI/CD Test Pipeline' : isCloud ? 'Terraform Cloud Capstone' : isMobile ? 'App Store Deployment' : 'Capstone Project', careerGoal, learningFormat),
+            },
           ],
         },
       ],

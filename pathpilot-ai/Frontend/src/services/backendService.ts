@@ -1,4 +1,4 @@
-﻿/**
+/**
  * backendService.ts — Typed wrappers for every PathPilot AI backend endpoint.
  *
  * When VITE_API_URL is set and the user has a real Supabase session,
@@ -117,6 +117,14 @@ async function hasRealSession(): Promise<boolean> {
   }
 }
 
+function inferResourceType(url: string): 'video' | 'article' | 'course' | 'documentation' | 'project' {
+  const u = url.toLowerCase();
+  if (u.includes('youtube.com') || u.includes('youtu.be') || u.includes('vimeo')) return 'video';
+  if (u.includes('docs.') || u.includes('developer.mozilla') || u.includes('/docs') || u.includes('handbook') || u.includes('manual')) return 'documentation';
+  if (u.includes('coursera') || u.includes('edx') || u.includes('udemy') || u.includes('kaggle') || u.includes('learn.')) return 'course';
+  return 'article';
+}
+
 // ── Converter: BackendLearningPath → frontend LearningPath ─────────────────
 
 export function backendPathToFrontend(bp: BackendLearningPath): LearningPath {
@@ -134,24 +142,27 @@ export function backendPathToFrontend(bp: BackendLearningPath): LearningPath {
         description: mod.description,
         completed: mod.lessons.every((l) => l.completed),
         expanded: false,
-        lessons: mod.lessons.map((l) => ({
-          id: l.id,
-          title: l.title,
-          description: l.description,
-          duration: `${l.estimated_hours}h`,
-          completed: l.completed,
-          type: 'lesson' as const,
-          resources: l.resource_url
-            ? [
-                {
-                  id: l.id,
-                  title: 'Resource',
-                  type: 'article' as const,
-                  url: l.resource_url,
-                },
-              ]
-            : [],
-        })),
+        lessons: mod.lessons.map((l) => {
+          const resUrl = l.resource_url || `https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(l.title)}`;
+          const resType = inferResourceType(resUrl);
+          return {
+            id: l.id,
+            title: l.title,
+            description: l.description,
+            duration: `${l.estimated_hours}h`,
+            completed: l.completed,
+            type: 'lesson' as const,
+            resources: [
+              {
+                id: `${l.id}-res`,
+                title: `${l.title} — Study Resource`,
+                type: resType,
+                url: resUrl,
+                duration: `${Math.round(l.estimated_hours * 30)} min`,
+              },
+            ],
+          };
+        }),
       },
     ],
   }));

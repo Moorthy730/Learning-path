@@ -29,6 +29,7 @@ from app.schemas import (
     RevisePathRequest,
 )
 from app.ai.gemini_service import generate_roadmap, generate_revised_roadmap
+from app.services.resource_service import resolve_lesson_resource
 from app.exceptions import DatabaseError, NotFoundError, ForbiddenError
 
 logger = logging.getLogger(__name__)
@@ -43,10 +44,21 @@ def _now() -> str:
 def _assemble_path(path_row: dict, modules: list[dict], lessons: list[dict]) -> LearningPathResponse:
     """Combine flat DB rows into a nested LearningPathResponse."""
     lessons_by_module: dict[str, list[LessonDB]] = {}
+    goal_name = path_row.get("goal") or path_row.get("title") or ""
+    pref_format = path_row.get("learning_format", "mixed")
+
     for l in lessons:
         mid = l["module_id"]
         if mid not in lessons_by_module:
             lessons_by_module[mid] = []
+        # Ensure resource_url is always populated with a valid, working resource
+        if not l.get("resource_url"):
+            l["resource_url"] = resolve_lesson_resource(
+                lesson_title=l.get("title", ""),
+                career_goal=goal_name,
+                raw_url=None,
+                format_preference=pref_format,
+            )
         lessons_by_module[mid].append(LessonDB(**l))
 
     module_objects = []
@@ -161,13 +173,20 @@ async def create_learning_path(
 
         for idx, lesson_ai in enumerate(module_ai.lessons, start=1):
             lesson_id = str(uuid.uuid4())
+            resolved_url = resolve_lesson_resource(
+                lesson_title=lesson_ai.title,
+                module_title=module_ai.title,
+                career_goal=req.career_goal,
+                raw_url=lesson_ai.resource_url,
+                format_preference=req.learning_format,
+            )
             lesson_data = {
                 "id": lesson_id,
                 "module_id": module_id,
                 "title": lesson_ai.title,
                 "description": lesson_ai.description,
                 "estimated_hours": lesson_ai.estimated_hours,
-                "resource_url": lesson_ai.resource_url,
+                "resource_url": resolved_url,
                 "completion_criteria": lesson_ai.completion_criteria,
                 "order_index": idx,
                 "completed": False,
@@ -393,13 +412,20 @@ async def revise_learning_path(
 
         for idx, lesson_ai in enumerate(module_ai.lessons, start=1):
             was_completed = lesson_ai.title.lower() in completed_titles
+            resolved_url = resolve_lesson_resource(
+                lesson_title=lesson_ai.title,
+                module_title=module_ai.title,
+                career_goal=gen_req.career_goal,
+                raw_url=lesson_ai.resource_url,
+                format_preference=gen_req.learning_format,
+            )
             lesson_data = {
                 "id": str(uuid.uuid4()),
                 "module_id": module_id,
                 "title": lesson_ai.title,
                 "description": lesson_ai.description,
                 "estimated_hours": lesson_ai.estimated_hours,
-                "resource_url": lesson_ai.resource_url,
+                "resource_url": resolved_url,
                 "completion_criteria": lesson_ai.completion_criteria,
                 "order_index": idx,
                 "completed": was_completed,

@@ -48,8 +48,25 @@ REQUIREMENTS:
 4. Include at least one practical project per module.
 5. Estimate realistic study hours for each lesson based on {req.daily_hours} hours/day capacity.
 6. Total duration should be approximately {req.duration_weeks} weeks.
-7. For resource_url fields: use null if you cannot cite a specific verified URL. Do NOT fabricate URLs.
-8. Generate between 3 and 10 modules appropriate to the complexity of the goal.
+7. Generate between 3 and 10 modules appropriate to the complexity of the goal.
+
+CRITICAL — RESOURCE URLS (resource_url field):
+- You MUST provide a real, working resource_url for EVERY lesson whenever a real URL exists.
+- Use official documentation, reputable learning platforms, or well-known educational sites.
+- Preferred domains: docs.python.org, developer.mozilla.org, react.dev, nextjs.org, typescriptlang.org,
+  nodejs.org, fastapi.tiangolo.com, docs.docker.com, kubernetes.io, learn.microsoft.com, go.dev,
+  rust-lang.org, tensorflow.org, pytorch.org, scikit-learn.org, pandas.pydata.org, numpy.org,
+  kaggle.com, freecodecamp.org, theodinproject.com, roadmap.sh, coursera.org, owasp.org,
+  portswigger.net/web-security, tryhackme.com, hackthebox.com, nmap.org, metasploit.com,
+  figma.com/resources, uxplanet.org, interaction-design.org, nngroup.com, material.io,
+  aws.amazon.com/training, cloud.google.com/training, docs.aws.amazon.com, azure.microsoft.com,
+  kubernetes.io/docs, helm.sh, terraform.io, ansible.com, grafana.com, prometheus.io,
+  w3schools.com, geeksforgeeks.org, leetcode.com, hackerrank.com, github.com, git-scm.com,
+  youtube.com (use real, specific educational video URLs when possible), edx.org, udemy.com,
+  web.dev, css-tricks.com, smashingmagazine.com, dev.to, stackoverflow.com
+- Use null ONLY when no specific real URL is known for that exact lesson topic.
+- Do NOT use placeholder, example.com, or fabricated URLs.
+- For project-type lessons where no direct resource exists, use null.
 
 Return ONLY a valid JSON object matching the required schema. Do not include markdown, code fences, or explanatory text.
 """
@@ -107,6 +124,9 @@ Regenerate a complete, revised learning roadmap that:
 2. Focuses on gaps not yet covered
 3. Maintains a logical progression
 4. Meets the updated time constraints
+
+IMPORTANT: For every lesson, provide a real resource_url from an official or reputable educational source.
+Use null only when no specific URL is known. Do NOT fabricate URLs.
 
 Return ONLY a valid JSON object matching the required schema. Do not include markdown, code fences, or explanatory text.
 """

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, ChevronDown, ChevronRight, CheckCircle, Circle,
@@ -53,20 +53,32 @@ function LessonItem({
           <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
             <Clock className="w-3 h-3" /> {lesson.duration}
           </span>
-          {lesson.resources.length > 0 && (
-            <div className="flex flex-wrap gap-1">
+          {(lesson.resources && lesson.resources.length > 0) ? (
+            <div className="flex flex-wrap gap-1.5 items-center">
               {lesson.resources.map(r => (
                 <a
                   key={r.id}
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-0.5 text-xs text-[#D85C4A] dark:text-[#E9825C] hover:underline"
+                  className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg font-medium text-[#D85C4A] dark:text-[#E9825C] bg-[#FFF0EE] dark:bg-[#D85C4A]/10 border border-[#F9E3B5] dark:border-[#D85C4A]/20 hover:bg-[#F9E3B5]/60 dark:hover:bg-[#D85C4A]/20 transition-all shadow-sm"
+                  title={r.title}
                 >
-                  <ExternalLink className="w-3 h-3" /> {r.title}
+                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate max-w-[240px]">{r.title}</span>
                 </a>
               ))}
             </div>
+          ) : (
+            <a
+              href={`https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(lesson.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg font-medium text-[#D85C4A] dark:text-[#E9825C] bg-[#FFF0EE] dark:bg-[#D85C4A]/10 border border-[#F9E3B5] dark:border-[#D85C4A]/20 hover:bg-[#F9E3B5]/60 dark:hover:bg-[#D85C4A]/20 transition-all shadow-sm"
+            >
+              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+              <span>Explore {lesson.title} Guide</span>
+            </a>
           )}
         </div>
       </div>
