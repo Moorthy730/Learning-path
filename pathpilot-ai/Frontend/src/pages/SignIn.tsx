@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import Button from '../components/ui/Button';
 
 export default function SignIn() {
-  const { signIn, addToast } = useApp();
+  const { addToast } = useApp();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -32,31 +32,16 @@ export default function SignIn() {
       // Try real Supabase authentication first
       const { authService } = await import('../services/backendService');
       await authService.signIn(email, password);
-      const name = email.split('@')[0];
-      signIn(name.charAt(0).toUpperCase() + name.slice(1), email, false);
       addToast({ type: 'success', title: 'Welcome back!', message: 'You have signed in successfully.' });
       navigate('/dashboard');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      // If Supabase is not configured, fall back to demo mode
-      if (msg.includes('placeholder') || msg.includes('fetch') || msg.includes('NetworkError')) {
-        const name = email.split('@')[0];
-        signIn(name.charAt(0).toUpperCase() + name.slice(1), email, false);
-        addToast({ type: 'success', title: 'Welcome back! (Demo)', message: 'Running in demo mode.' });
-        navigate('/dashboard');
-      } else {
-        setError(msg || 'Sign in failed. Please check your credentials.');
-      }
+      setError(msg || 'Sign in failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoEntry = () => {
-    signIn('Demo User', 'demo@pathpilot.ai', true);
-    addToast({ type: 'info', title: 'Exploring demo mode', message: 'You are signed in as a demo user.' });
-    navigate('/dashboard');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF0EE] via-[#FFFAF5] to-[#FFF8EE] dark:from-[#140a08] dark:via-[#1c0f0d] dark:to-[#140a08] flex items-center justify-center px-4 py-12">
@@ -75,14 +60,6 @@ export default function SignIn() {
 
         {/* Card */}
         <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-[#F6C77B]/40 dark:border-[#5c2e20]/50 shadow-xl shadow-[#D85C4A]/5 p-8">
-          {/* Demo notice */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl p-3 mb-6 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-700 dark:text-amber-300">
-              <strong>Demo mode:</strong> This is not production authentication. Data is stored locally in your browser only.
-            </p>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
@@ -131,18 +108,7 @@ export default function SignIn() {
             </Button>
           </form>
 
-          <div className="mt-4 relative">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100 dark:border-gray-800" /></div>
-            <div className="relative flex justify-center text-xs"><span className="bg-white dark:bg-[#1c0f0d] px-3 text-gray-400">or</span></div>
-          </div>
 
-          <button
-            id="explore-demo-btn"
-            onClick={handleDemoEntry}
-            className="mt-4 w-full py-2.5 rounded-xl border border-dashed border-[#F3A65A]/60 dark:border-[#5c2e20] text-[#D85C4A] dark:text-[#E9825C] text-sm font-medium hover:bg-[#FFF0EE] dark:hover:bg-[#D85C4A]/10 transition-colors"
-          >
-            Explore Demo (no account needed)
-          </button>
         </div>
 
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">

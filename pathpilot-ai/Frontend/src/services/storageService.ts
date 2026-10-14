@@ -83,24 +83,6 @@ export function saveUser(user: UserProfile): void {
   safeSet(KEYS.USER, user);
 }
 
-export function createDemoUser(name = 'Demo User', email = 'demo@pathpilot.ai'): UserProfile {
-  const user: UserProfile = {
-    id: `user-${Date.now()}`,
-    name,
-    email,
-    joinedAt: new Date().toISOString(),
-    learningStreak: 0,
-    totalHoursLearned: 0,
-    lessonsCompleted: 0,
-    preferredFormat: 'mixed',
-    dailyTarget: 2,
-    theme: 'light',
-    isDemo: true,
-  };
-  saveUser(user);
-  return user;
-}
-
 export function signOut(): void {
   localStorage.removeItem(KEYS.USER);
 }
@@ -110,16 +92,6 @@ export function getLearningPaths(userEmail?: string): LearningPath[] {
   const key = getPathsStorageKey(userEmail);
   const userPaths = safeGet<LearningPath[]>(key);
   if (userPaths !== null) return userPaths;
-
-  // If no user-specific key exists, check if legacy global key exists for demo user
-  const activeEmail = userEmail || safeGet<UserProfile>(KEYS.USER)?.email;
-  if (activeEmail === 'demo@pathpilot.ai') {
-    const legacy = safeGet<LearningPath[]>(KEYS.PATHS);
-    if (legacy) {
-      safeSet(key, legacy);
-      return legacy;
-    }
-  }
 
   return [];
 }
@@ -249,4 +221,3 @@ export function resetDemoData(userEmail?: string): void {
     saveUser(user);
   }
 }
-

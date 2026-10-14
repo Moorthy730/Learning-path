@@ -1,8 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sun, Moon, Trash2, LogOut, AlertTriangle, Bell, BellOff, Clock, Globe } from 'lucide-react';
+import { Sun, Moon, LogOut, AlertTriangle, Bell, BellOff, Clock, Globe } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { resetDemoData } from '../services/storageService';
 import { reminderApi } from '../services/notificationService';
 import type { ReminderPreferences } from '../services/notificationService';
 import Button from '../components/ui/Button';
@@ -40,7 +39,6 @@ export default function Settings() {
   const [email] = useState(user?.email ?? '');
   const [dailyTarget, setDailyTarget] = useState(user?.dailyTarget ?? 2);
   const [preferredFormat, setPreferredFormat] = useState<LearningFormat>(user?.preferredFormat ?? 'mixed');
-  const [resetConfirm, setResetConfirm] = useState(false);
   const [nameEditing, setNameEditing] = useState(false);
 
   // ── Reminder preferences ──────────────────────────────────────────────────
@@ -103,14 +101,6 @@ export default function Settings() {
     addToast({ type: 'success', title: 'Preferences saved' });
   };
 
-  const handleReset = () => {
-    resetDemoData();
-    setPaths([]);
-    if (user) setUser({ ...user, lessonsCompleted: 0, totalHoursLearned: 0, learningStreak: 0 });
-    addToast({ type: 'info', title: 'Demo data reset', message: 'All learning paths and progress have been cleared.' });
-    setResetConfirm(false);
-  };
-
   const handleSignOut = () => {
     signOut();
     navigate('/');
@@ -121,15 +111,6 @@ export default function Settings() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage your profile and learning preferences.</p>
-      </div>
-
-      {/* Demo notice */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start gap-3">
-        <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-amber-700 dark:text-amber-300">
-          <strong>Demo mode active.</strong> This is not a real user account. Data is stored in browser localStorage only.
-          <Badge color="amber" size="sm" variant="soft" className="ml-2 inline-flex">Interactive Demo</Badge>
-        </div>
       </div>
 
       {/* Profile */}
@@ -153,7 +134,7 @@ export default function Settings() {
             </div>
           )}
         </Field>
-        <Field label="Email" description="Your account email (demo only)">
+        <Field label="Email" description="Your account email">
           <span className="text-sm text-gray-500 dark:text-gray-400">{email}</span>
         </Field>
         <Field label="Member Since">
@@ -332,20 +313,8 @@ export default function Settings() {
         </Field>
       </Section>
 
-      {/* Danger Zone */}
-      <Section title="Danger Zone">
-        <Field label="Reset Demo Data" description="Clear all learning paths and progress. This cannot be undone.">
-          {resetConfirm ? (
-            <div className="flex gap-2">
-              <span className="text-xs text-red-600 dark:text-red-400 self-center">Are you sure?</span>
-              <Button size="sm" variant="danger" onClick={handleReset} id="settings-confirm-reset">Yes, Reset</Button>
-              <Button size="sm" variant="ghost" onClick={() => setResetConfirm(false)}>Cancel</Button>
-            </div>
-          ) : (
-            <Button size="sm" variant="danger" leftIcon={<Trash2 className="w-4 h-4" />} onClick={() => setResetConfirm(true)} id="settings-reset-btn">Reset Data</Button>
-          )}
-        </Field>
-        <Field label="Sign Out" description="End your demo session">
+      <Section title="Account">
+        <Field label="Sign Out" description="End your current session">
           <Button size="sm" variant="outline" leftIcon={<LogOut className="w-4 h-4" />} onClick={handleSignOut} id="settings-signout-btn">Sign Out</Button>
         </Field>
       </Section>

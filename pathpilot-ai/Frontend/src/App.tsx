@@ -8,7 +8,6 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import DemoEntry from './pages/DemoEntry';
 import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
 import MyLearningPaths from './pages/MyLearningPaths';
@@ -20,7 +19,8 @@ import NotFound from './pages/NotFound';
 
 /** Redirects to /signin if the user is not authenticated */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useApp();
+  const { user, authReady } = useApp();
+  if (!authReady) return null;
   if (!user) return <Navigate to="/signin" replace />;
   return <>{children}</>;
 }
@@ -32,7 +32,6 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/demo-entry" element={<DemoEntry />} />
 
       {/* Protected onboarding (outside dashboard layout) */}
       <Route

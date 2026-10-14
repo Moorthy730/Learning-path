@@ -63,7 +63,7 @@ function Field({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function SignUp() {
-  const { signIn, addToast } = useApp();
+  const { addToast } = useApp();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -100,31 +100,22 @@ export default function SignUp() {
     try {
       // Attempt real Supabase signup
       const { authService } = await import('../services/backendService');
-      await authService.signUp(email, password, name.trim());
-      signIn(name.trim(), email, false);
-      addToast({ type: 'success', title: 'Account created!', message: "Welcome to PathPilot AI. Let's build your roadmap!" });
-      navigate('/onboarding');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      // Fall back to demo mode when Supabase is unconfigured or unreachable
-      if (msg.includes('placeholder') || msg.includes('fetch') || msg.includes('NetworkError') || msg.includes('signUp')) {
-        await new Promise(r => setTimeout(r, 800));
-        signIn(name.trim(), email, false);
+      const result = await authService.signUp(email, password, name.trim());
+      if (result.session) {
         addToast({ type: 'success', title: 'Account created!', message: "Welcome to PathPilot AI. Let's build your roadmap!" });
         navigate('/onboarding');
       } else {
-        setErrors({ name: '', email: msg || 'Sign up failed. Please try again.', password: '', confirmPassword: '' });
+        addToast({ type: 'success', title: 'Check your email', message: 'Confirm your email address, then sign in to continue.' });
+        navigate('/signin');
       }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrors({ name: '', email: msg || 'Sign up failed. Please try again.', password: '', confirmPassword: '' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoEntry = () => {
-    signIn('Demo User', 'demo@pathpilot.ai', true);
-    addToast({ type: 'info', title: 'Exploring demo mode' });
-    navigate('/dashboard');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF0EE] via-white to-[#FFF8EE] dark:from-[#140a08] dark:via-[#1c0f0d] dark:to-[#140a08] flex items-center justify-center px-4 py-12">
@@ -141,13 +132,6 @@ export default function SignUp() {
         </div>
 
         <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-[#F6C77B]/40 dark:border-[#5c2e20]/50 shadow-xl shadow-[#D85C4A]/5 p-8">
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl p-3 mb-6 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-700 dark:text-amber-300">
-              <strong>Demo mode:</strong> Data is stored locally in your browser. No real account is created.
-            </p>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <Field
               id="signup-name"
@@ -219,18 +203,7 @@ export default function SignUp() {
             </div>
           </form>
 
-          <div className="mt-4 relative">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100 dark:border-gray-800" /></div>
-            <div className="relative flex justify-center text-xs"><span className="bg-white dark:bg-[#1c0f0d] px-3 text-gray-400">or</span></div>
-          </div>
 
-          <button
-            id="signup-demo-btn"
-            onClick={handleDemoEntry}
-            className="mt-4 w-full py-2.5 rounded-xl border border-dashed border-indigo-300 dark:border-[#5c2e20] text-[#D85C4A] dark:text-[#E9825C] text-sm font-medium hover:bg-[#FFF0EE] dark:hover:bg-[#D85C4A]/10 transition-colors"
-          >
-            Explore Demo (no account needed)
-          </button>
         </div>
 
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">

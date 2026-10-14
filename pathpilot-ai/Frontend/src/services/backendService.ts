@@ -4,7 +4,7 @@
  * When VITE_API_URL is set and the user has a real Supabase session,
  * all calls go to the FastAPI backend.
  *
- * When running in demo mode (no env vars / no session), each function
+ * Calls require an active Supabase session.
  * falls through to the original localStorage-based mock — preserving
  * the full demo experience without requiring a backend.
  */
@@ -233,6 +233,7 @@ export const authService = {
   async signOut() {
     await supabase.auth.signOut();
   },
+
 
   async getSession() {
     const { data } = await supabase.auth.getSession();

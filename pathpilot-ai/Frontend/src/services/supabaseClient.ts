@@ -14,7 +14,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     '[PathPilot] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set. ' +
-      'Real authentication will not work. Running in demo mode.',
+      'Authentication is unavailable until Supabase environment variables are configured.',
   );
 }
 

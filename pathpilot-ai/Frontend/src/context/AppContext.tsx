@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { UserProfile, LearningPath, Toast } from '../types';
 import * as storage from '../services/storageService';
+import { supabase } from '../services/supabaseClient';
 
 interface AppContextValue {
   user: UserProfile | null;
+  authReady: boolean;
   paths: LearningPath[];
   toasts: Toast[];
   theme: 'light' | 'dark';
@@ -18,149 +21,131 @@ interface AppContextValue {
   removeToast: (id: string) => void;
   toggleTheme: () => void;
   setSidebarOpen: (open: boolean) => void;
-  signIn: (name: string, email: string, isDemo?: boolean) => void;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
 
+function profileFromAuth(user: SupabaseUser): UserProfile {
+  const metadata = user.user_metadata ?? {};
+  const name = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'Learner';
+  return {
+    id: user.id,
+    name,
+    email: user.email ?? '',
+    joinedAt: user.created_at,
+    learningStreak: 0,
+    totalHoursLearned: 0,
+    lessonsCompleted: 0,
+    preferredFormat: 'mixed',
+    dailyTarget: 2,
+    theme: storage.getTheme(),
+  };
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUserState] = useState<UserProfile | null>(() => storage.getUser());
-  const [paths, setPathsState] = useState<LearningPath[]>(() => storage.getLearningPaths());
+  const [user, setUserState] = useState<UserProfile | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [paths, setPathsState] = useState<LearningPath[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [theme, setThemeState] = useState<'light' | 'dark'>(() => storage.getTheme());
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Apply theme to document
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
-  const setUser = useCallback((u: UserProfile | null) => {
-    setUserState(u);
-    if (u) storage.saveUser(u);
+  useEffect(() => {
+    let active = true;
+    const applyAuthUser = (authUser: SupabaseUser | null) => {
+      if (!active) return;
+      if (!authUser) {
+        setUserState(null);
+        setPathsState([]);
+      } else {
+        const profile = profileFromAuth(authUser);
+        setUserState(profile);
+        setPathsState(storage.getLearningPaths(profile.email));
+      }
+      setAuthReady(true);
+    };
+
+    supabase.auth.getSession()
+      .then(({ data }) => applyAuthUser(data.session?.user ?? null))
+      .catch(() => applyAuthUser(null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      applyAuthUser(session?.user ?? null);
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const setPaths = useCallback((p: LearningPath[]) => {
-    setPathsState(p);
-    storage.saveLearningPaths(p, user?.email);
+  const setUser = useCallback((profile: UserProfile | null) => setUserState(profile), []);
+  const setPaths = useCallback((next: LearningPath[]) => {
+    setPathsState(next);
+    if (user?.email) storage.saveLearningPaths(next, user.email);
   }, [user?.email]);
-
   const addPath = useCallback((path: LearningPath) => {
-    setPathsState(prev => {
-      const next = [path, ...prev];
-      storage.saveLearningPaths(next, user?.email);
+    setPathsState(previous => {
+      const next = [path, ...previous];
+      if (user?.email) storage.saveLearningPaths(next, user.email);
       return next;
     });
   }, [user?.email]);
-
   const updatePath = useCallback((updated: LearningPath) => {
-    setPathsState(prev => {
-      const next = prev.map(p => (p.id === updated.id ? updated : p));
-      storage.saveLearningPaths(next, user?.email);
+    setPathsState(previous => {
+      const next = previous.map(path => path.id === updated.id ? updated : path);
+      if (user?.email) storage.saveLearningPaths(next, user.email);
       return next;
     });
   }, [user?.email]);
-
   const deletePath = useCallback((id: string) => {
-    setPathsState(prev => {
-      const next = prev.filter(p => p.id !== id);
-      storage.saveLearningPaths(next, user?.email);
+    setPathsState(previous => {
+      const next = previous.filter(path => path.id !== id);
+      if (user?.email) storage.saveLearningPaths(next, user.email);
       return next;
     });
   }, [user?.email]);
-
   const toggleLesson = useCallback((pathId: string, lessonId: string) => {
-    const updated = storage.toggleLessonCompletion(pathId, lessonId, user?.email);
-    if (updated) {
-      setPathsState(prev => prev.map(p => (p.id === pathId ? updated : p)));
-      const freshUser = storage.getUser();
-      if (freshUser) setUserState(freshUser);
-    }
+    if (!user?.email) return;
+    const updated = storage.toggleLessonCompletion(pathId, lessonId, user.email);
+    if (updated) setPathsState(previous => previous.map(path => path.id === pathId ? updated : path));
   }, [user?.email]);
-
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = `toast-${Date.now()}`;
-    setToasts(prev => [...prev, { ...toast, id }]);
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 4000);
+    setToasts(previous => [...previous, { ...toast, id }]);
+    setTimeout(() => setToasts(previous => previous.filter(item => item.id !== id)), 4000);
   }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
+  const removeToast = useCallback((id: string) => setToasts(previous => previous.filter(toast => toast.id !== id)), []);
   const toggleTheme = useCallback(() => {
-    setThemeState(prev => {
-      const next = prev === 'light' ? 'dark' : 'light';
+    setThemeState(previous => {
+      const next = previous === 'light' ? 'dark' : 'light';
       storage.setTheme(next);
       return next;
     });
   }, []);
-
-  const signIn = useCallback((name: string, email: string, isDemo = false) => {
-    const existingUser = storage.getUser();
-    if (existingUser && existingUser.email === email) {
-      setUserState(existingUser);
-    } else {
-      const newUser = storage.createDemoUser(name, email);
-      newUser.isDemo = isDemo;
-      storage.saveUser(newUser);
-      setUserState(newUser);
-    }
-    const userPaths = storage.getLearningPaths(email);
-    setPathsState(userPaths);
-  }, []);
-
-  const signOut = useCallback(() => {
+  const signOut = useCallback(async () => {
+    await supabase.auth.signOut();
     storage.signOut();
-    setUserState(null);
-    setPathsState([]);
   }, []);
 
-  // Sync real learning paths from backend if user has a real session
   useEffect(() => {
     let cancelled = false;
-    async function syncBackend() {
-      if (!user || user.isDemo) return;
-      try {
-        const { pathsService, backendPathToFrontend } = await import('../services/backendService');
-        const summaries = await pathsService.list();
-        if (cancelled) return;
-        if (summaries && summaries.length > 0) {
-          const fullPaths = await Promise.all(
-            summaries.map(s => pathsService.get(s.id).then(backendPathToFrontend))
-          );
-          if (cancelled) return;
-          setPathsState(fullPaths);
-          storage.saveLearningPaths(fullPaths, user.email);
-        } else if (summaries && summaries.length === 0) {
-          setPathsState([]);
-          storage.saveLearningPaths([], user.email);
-        }
-      } catch {
-        // Backend unavailable — keep local state
+    if (!user) return;
+    import('../services/backendService').then(async ({ pathsService, backendPathToFrontend }) => {
+      const summaries = await pathsService.list();
+      const fullPaths = await Promise.all(summaries.map(summary => pathsService.get(summary.id).then(backendPathToFrontend)));
+      if (!cancelled) {
+        setPathsState(fullPaths);
+        storage.saveLearningPaths(fullPaths, user.email);
       }
-    }
-    syncBackend();
+    }).catch(() => undefined);
     return () => { cancelled = true; };
-  }, [user?.email, user?.isDemo]);
+  }, [user?.id, user?.email]);
 
-  return (
-    <AppContext.Provider value={{
-      user, paths, toasts, theme, sidebarOpen,
-      setUser, setPaths, addPath, updatePath, deletePath,
-      toggleLesson, addToast, removeToast, toggleTheme, setSidebarOpen,
-      signIn, signOut,
-    }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ user, authReady, paths, toasts, theme, sidebarOpen, setUser, setPaths, addPath, updatePath, deletePath, toggleLesson, addToast, removeToast, toggleTheme, setSidebarOpen, signOut }}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {

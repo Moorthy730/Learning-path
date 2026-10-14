@@ -199,7 +199,6 @@ export default function RoadmapDetails() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <Badge color="indigo" variant="solid">{path.skillLevel}</Badge>
-              <span className="text-white/70 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">Interactive Demo</span>
             </div>
             <h1 className="text-xl font-bold">{path.title}</h1>
             <p className="text-white/80 text-sm mt-1 leading-relaxed">{path.description}</p>

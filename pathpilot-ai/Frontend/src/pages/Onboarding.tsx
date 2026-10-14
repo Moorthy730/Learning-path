@@ -105,7 +105,10 @@ export default function Onboarding() {
         path = backendPathToFrontend(backendPath);
         // Remove from localStorage — real data is in Supabase
       } catch (backendErr) {
-        // Backend unavailable or not configured — fall back to demo mock
+        // Generation requires the authenticated backend; never create a local
+        // mock path when the request fails.
+        throw backendErr;
+        // Legacy demo generator kept below only for source-history context.
         const { generateLearningPath: mockGenerate } = await import('../services/roadmapService');
         const targetWeeks =
           data.targetDurationUnit === 'months'
@@ -146,9 +149,6 @@ export default function Onboarding() {
           <p className="text-sm text-gray-500 dark:text-gray-400">Building your personalized learning roadmap</p>
           <div className="mt-6 mx-auto max-w-48">
             <ProgressBar value={((genMsgIdx + 1) / LOADING_MESSAGES.length) * 100} animated />
-          </div>
-          <div className="inline-flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-medium px-3 py-1 rounded-full mt-6">
-            Interactive Demo — using predefined templates
           </div>
         </div>
       </div>
@@ -389,9 +389,6 @@ export default function Onboarding() {
           {/* Step 4: Review */}
           {step === 4 && (
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-medium px-3 py-1 rounded-full">
-                Interactive Demo · Predefined templates
-              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 {[

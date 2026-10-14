@@ -91,7 +91,8 @@ export interface UserProfile {
   preferredFormat: LearningFormat;
   dailyTarget: number;
   theme: 'light' | 'dark';
-  isDemo: boolean;
+  /** Legacy storage compatibility; AppContext creates users exclusively from Supabase sessions. */
+  isDemo?: boolean;
 }
 
 export interface Achievement {

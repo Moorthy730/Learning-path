@@ -48,10 +48,6 @@ export default function Home() {
     else navigate('/signup');
   };
 
-  const handleExploreDemo = () => {
-    navigate('/demo-entry');
-  };
-
   return (
     <div className="min-h-screen bg-white dark:bg-[#140a08] font-['Inter',sans-serif]">
       {/* Navbar */}
@@ -132,14 +128,6 @@ export default function Home() {
           >
             <Sparkles className="w-5 h-5" />
             Generate My Learning Path
-          </button>
-          <button
-            id="hero-cta-secondary"
-            onClick={handleExploreDemo}
-            className="inline-flex items-center gap-2 border border-[#F6C77B] dark:border-[#5c2e20] bg-white dark:bg-[#2a1410] text-[#542E28] dark:text-[#F6C77B] font-semibold px-8 py-3.5 rounded-xl hover:border-[#D85C4A] dark:hover:border-[#E9825C] transition-all text-base"
-          >
-            Explore Demo
-            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -329,7 +317,7 @@ export default function Home() {
               <a href="#features" className="hover:text-[#D85C4A] dark:hover:text-[#E9825C] transition-colors">Features</a>
               <a href="#how-it-works" className="hover:text-[#D85C4A] dark:hover:text-[#E9825C] transition-colors">How It Works</a>
             </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500">© 2026 PathPilot AI · Interactive Demo · Not Production Ready</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">© 2026 PathPilot AI</p>
           </div>
         </div>
       </footer>
