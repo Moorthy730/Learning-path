@@ -44,6 +44,14 @@ export default function Analytics() {
       ]
     : pieData;
 
+  const modulesData = paths.length > 0
+    ? paths.flatMap(p => p.stages?.flatMap(s => s.modules.map(m => ({
+        name: m.title,
+        completed: m.lessons.filter(l => l.completed).length,
+        total: m.lessons.length,
+      }))) ?? [])
+    : analytics.moduleCompletion;
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
@@ -53,10 +61,10 @@ export default function Analytics() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Clock} label="Total Hours" value={`${user?.totalHoursLearned?.toFixed(1) ?? analytics.totalHours}h`} color="bg-[#D85C4A]" />
-        <StatCard icon={Target} label="Lessons Done" value={totalCompleted || analytics.completedLessons} color="bg-[#E9825C]" />
-        <StatCard icon={Flame} label="Current Streak" value={`${user?.learningStreak ?? analytics.currentStreak} days`} color="bg-orange-500" />
-        <StatCard icon={Trophy} label="Longest Streak" value={`${analytics.longestStreak} days`} color="bg-amber-500" />
+        <StatCard icon={Clock} label="Total Hours" value={`${user?.totalHoursLearned !== undefined ? user.totalHoursLearned.toFixed(1) : '0.0'}h`} color="bg-[#D85C4A]" />
+        <StatCard icon={Target} label="Lessons Done" value={totalCompleted} color="bg-[#E9825C]" />
+        <StatCard icon={Flame} label="Current Streak" value={`${totalCompleted > 0 ? (user?.learningStreak ?? 1) : 0} days`} color="bg-orange-500" />
+        <StatCard icon={Trophy} label="Longest Streak" value={`${totalCompleted > 0 ? (user?.learningStreak ?? 1) : 0} days`} color="bg-amber-500" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -123,17 +131,21 @@ export default function Analytics() {
       <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <h2 className="font-semibold text-gray-900 dark:text-white mb-5">Module Completion</h2>
         <div className="space-y-4">
-          {analytics.moduleCompletion.map((mod, i) => (
-            <ProgressBar
-              key={mod.name}
-              value={mod.completed}
-              max={mod.total}
-              label={`${mod.name} (${mod.completed}/${mod.total})`}
-              showLabel
-              color={i % 2 === 0 ? 'indigo' : 'violet'}
-              animated
-            />
-          ))}
+          {modulesData.length > 0 ? (
+            modulesData.map((mod, i) => (
+              <ProgressBar
+                key={`${mod.name}-${i}`}
+                value={mod.completed}
+                max={mod.total}
+                label={`${mod.name} (${mod.completed}/${mod.total})`}
+                showLabel
+                color={i % 2 === 0 ? 'indigo' : 'violet'}
+                animated
+              />
+            ))
+          ) : (
+            <p className="text-sm text-gray-400 dark:text-gray-500">No modules yet</p>
+          )}
         </div>
       </div>
 

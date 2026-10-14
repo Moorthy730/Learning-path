@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Sparkles, BookOpen, Clock, Flame, TrendingUp,
@@ -25,21 +25,76 @@ function StatCard({ label, value, sub, icon: Icon, color }: { label: string; val
   );
 }
 
-const MILESTONES = [
-  { title: 'Complete React Basics module', due: '2 days', path: 'Full Stack Developer' },
-  { title: 'Submit Stage 1 portfolio project', due: '5 days', path: 'Full Stack Developer' },
-  { title: 'Start Data Analyst exploration path', due: '1 week', path: 'Data Analyst' },
-];
-
 export default function Dashboard() {
   const { user, paths } = useApp();
   const navigate = useNavigate();
 
-  const totalLessons = paths.reduce((a, p) => a + p.totalLessons, 0);
-  const completedLessons = paths.reduce((a, p) => a + p.completedLessons, 0);
+  // Calculate actual total and completed lessons across all paths
+  const totalLessons = paths.reduce((acc, p) => {
+    const count = p.stages?.reduce((sAcc, s) => sAcc + s.modules.reduce((mAcc, m) => mAcc + m.lessons.length, 0), 0) ?? p.totalLessons;
+    return acc + (count || 0);
+  }, 0);
+
+  const completedLessons = paths.reduce((acc, p) => {
+    const done = p.stages?.reduce((sAcc, s) => sAcc + s.modules.reduce((mAcc, m) => mAcc + m.lessons.filter(l => l.completed).length, 0), 0) ?? p.completedLessons;
+    return acc + (done || 0);
+  }, 0);
+
   const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   const inProgressPaths = paths.filter(p => p.status === 'in-progress');
   const activePath = inProgressPaths[0] ?? paths[0];
+
+  // Calculate real study hours directly from completed lesson durations
+  const trackedHours = paths.reduce((acc, p) => {
+    let pathMins = 0;
+    p.stages?.forEach(s => {
+      s.modules?.forEach(m => {
+        m.lessons?.forEach(l => {
+          if (l.completed) {
+            const d = (l.duration || '').toLowerCase();
+            const hrMatch = d.match(/(\d+(?:\.\d+)?)\s*h/);
+            const minMatch = d.match(/(\d+(?:\.\d+)?)\s*m/);
+            if (hrMatch) pathMins += parseFloat(hrMatch[1]) * 60;
+            if (minMatch) pathMins += parseFloat(minMatch[1]);
+            if (!hrMatch && !minMatch) {
+              const num = parseFloat(d);
+              if (!isNaN(num)) pathMins += num * 60;
+            }
+          }
+        });
+      });
+    });
+    return acc + pathMins / 60;
+  }, 0);
+
+  const displayHours = completedLessons > 0
+    ? (user?.totalHoursLearned && user.totalHoursLearned > 0
+        ? user.totalHoursLearned.toFixed(1)
+        : trackedHours > 0
+        ? trackedHours.toFixed(1)
+        : '0')
+    : '0';
+
+  const streak = completedLessons > 0 ? (user?.learningStreak || 1) : 0;
+
+  // Real upcoming milestones from active paths
+  const upcomingMilestones = paths.flatMap(p => {
+    const uncompleted: { title: string; due: string; path: string }[] = [];
+    p.stages?.forEach((s) => {
+      s.modules?.forEach((m) => {
+        m.lessons?.forEach((l) => {
+          if (!l.completed && uncompleted.length < 3) {
+            uncompleted.push({
+              title: `${l.title} (${m.title})`,
+              due: `Stage ${s.number}`,
+              path: p.title,
+            });
+          }
+        });
+      });
+    });
+    return uncompleted;
+  }).slice(0, 3);
 
   const colorMap: Record<string, string> = {
     indigo: 'bg-[#D85C4A]', violet: 'bg-[#E9825C]', blue: 'bg-blue-500',
@@ -69,9 +124,9 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Learning Paths" value={paths.length} sub="Total created" icon={BookOpen} color="bg-[#D85C4A]" />
-        <StatCard label="Lessons Completed" value={completedLessons || user?.lessonsCompleted || 0} sub={`of ${totalLessons || 80} total`} icon={Target} color="bg-[#E9825C]" />
-        <StatCard label="Learning Hours" value={`${user?.totalHoursLearned?.toFixed(1) ?? '0'}`} sub="Total tracked" icon={Clock} color="bg-blue-500" />
-        <StatCard label="Day Streak" value={`🔥 ${user?.learningStreak ?? 0}`} sub="Current streak" icon={Flame} color="bg-orange-500" />
+        <StatCard label="Lessons Completed" value={completedLessons} sub={`of ${totalLessons} total`} icon={Target} color="bg-[#E9825C]" />
+        <StatCard label="Learning Hours" value={displayHours} sub="Total tracked" icon={Clock} color="bg-blue-500" />
+        <StatCard label="Day Streak" value={`🔥 ${streak}`} sub="Current streak" icon={Flame} color="bg-orange-500" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -178,7 +233,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">{completedLessons || user?.lessonsCompleted || 0} lessons done</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{completedLessons} lessons done</span>
             </div>
           </div>
 
@@ -186,15 +241,19 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-[#1c0f0d] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Upcoming Milestones</h2>
             <div className="space-y-3">
-              {MILESTONES.map((m, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#D85C4A] mt-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{m.title}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">Due in {m.due}</p>
+              {upcomingMilestones.length > 0 ? (
+                upcomingMilestones.map((m, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-[#D85C4A] mt-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{m.title}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">{m.due}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-gray-400 dark:text-gray-500">No upcoming milestones yet</p>
+              )}
             </div>
           </div>
 

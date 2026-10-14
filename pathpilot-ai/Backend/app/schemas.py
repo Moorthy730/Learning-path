@@ -188,6 +188,7 @@ class RevisePathRequest(BaseModel):
 class PathProgress(BaseModel):
     path_id: str
     total_modules: int
+    completed_modules: int = 0
     total_lessons: int
     completed_lessons: int
     remaining_lessons: int

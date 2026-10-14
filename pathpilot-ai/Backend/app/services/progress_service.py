@@ -71,6 +71,22 @@ async def toggle_lesson_progress(
     path_id = lesson_row["modules"]["path_id"]
     progress = await get_path_progress(path_id, user_id, db)
 
+    # Sync learning path status with actual progress
+    new_status = (
+        "completed"
+        if progress.total_lessons > 0 and progress.completed_lessons == progress.total_lessons
+        else "in-progress"
+        if progress.completed_lessons > 0
+        else "not-started"
+    )
+    try:
+        db.table("learning_paths").update({
+            "status": new_status,
+            "updated_at": _now(),
+        }).eq("id", path_id).execute()
+    except Exception as e:
+        logger.warning("Failed to update path status: %s", e)
+
     return LessonProgressResponse(
         lesson_id=lesson_id,
         completed=completed,
@@ -98,6 +114,7 @@ async def get_path_progress(path_id: str, user_id: str, db: Client) -> PathProgr
             return PathProgress(
                 path_id=path_id,
                 total_modules=0,
+                completed_modules=0,
                 total_lessons=0,
                 completed_lessons=0,
                 remaining_lessons=0,
@@ -125,9 +142,22 @@ async def get_path_progress(path_id: str, user_id: str, db: Client) -> PathProgr
     completed_hours = sum(l.get("estimated_hours", 0) for l in lessons if l.get("completed"))
     remaining_hours = sum(l.get("estimated_hours", 0) for l in lessons if not l.get("completed"))
 
+    # Map lessons to modules to determine completed modules
+    module_lessons_map: dict[str, list[dict]] = {m_id: [] for m_id in module_ids}
+    for l in lessons:
+        m_id = l.get("module_id")
+        if m_id in module_lessons_map:
+            module_lessons_map[m_id].append(l)
+
+    completed_modules = sum(
+        1 for m_id, m_lessons in module_lessons_map.items()
+        if m_lessons and all(l.get("completed") for l in m_lessons)
+    )
+
     return PathProgress(
         path_id=path_id,
         total_modules=len(modules),
+        completed_modules=completed_modules,
         total_lessons=total_lessons,
         completed_lessons=completed_lessons,
         remaining_lessons=remaining_lessons,

@@ -35,12 +35,12 @@ function fullStackTemplate(
           lessons: [
             {
               id: uid('les'), title: 'HTML Document Structure', description: 'Understand doctypes, head, body, and semantic tags.',
-              duration: '30 min', completed: true, type: 'lesson' as const,
+              duration: '30 min', completed: false, type: 'lesson' as const,
               resources: [{ id: uid('res'), title: 'MDN HTML Guide', type: 'documentation' as const, url: 'https://developer.mozilla.org/en-US/docs/Web/HTML', duration: '20 min' }],
             },
             {
               id: uid('les'), title: 'Semantic HTML Tags', description: 'Use header, main, article, section, aside, and footer correctly.',
-              duration: '45 min', completed: true, type: 'lesson' as const,
+              duration: '45 min', completed: false, type: 'lesson' as const,
               resources: [{ id: uid('res'), title: 'Semantic HTML – web.dev', type: 'article' as const, url: 'https://web.dev/learn/html/semantic-html/', duration: '25 min' }],
             },
             {

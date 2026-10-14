@@ -47,41 +47,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setPaths = useCallback((p: LearningPath[]) => {
     setPathsState(p);
-    storage.saveLearningPaths(p);
-  }, []);
+    storage.saveLearningPaths(p, user?.email);
+  }, [user?.email]);
 
   const addPath = useCallback((path: LearningPath) => {
     setPathsState(prev => {
       const next = [path, ...prev];
-      storage.saveLearningPaths(next);
+      storage.saveLearningPaths(next, user?.email);
       return next;
     });
-  }, []);
+  }, [user?.email]);
 
   const updatePath = useCallback((updated: LearningPath) => {
     setPathsState(prev => {
       const next = prev.map(p => (p.id === updated.id ? updated : p));
-      storage.saveLearningPaths(next);
+      storage.saveLearningPaths(next, user?.email);
       return next;
     });
-  }, []);
+  }, [user?.email]);
 
   const deletePath = useCallback((id: string) => {
     setPathsState(prev => {
       const next = prev.filter(p => p.id !== id);
-      storage.saveLearningPaths(next);
+      storage.saveLearningPaths(next, user?.email);
       return next;
     });
-  }, []);
+  }, [user?.email]);
 
   const toggleLesson = useCallback((pathId: string, lessonId: string) => {
-    const updated = storage.toggleLessonCompletion(pathId, lessonId);
+    const updated = storage.toggleLessonCompletion(pathId, lessonId, user?.email);
     if (updated) {
       setPathsState(prev => prev.map(p => (p.id === pathId ? updated : p)));
       const freshUser = storage.getUser();
       if (freshUser) setUserState(freshUser);
     }
-  }, []);
+  }, [user?.email]);
 
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = `toast-${Date.now()}`;
@@ -113,13 +113,43 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       storage.saveUser(newUser);
       setUserState(newUser);
     }
-    setPathsState(storage.getLearningPaths());
+    const userPaths = storage.getLearningPaths(email);
+    setPathsState(userPaths);
   }, []);
 
   const signOut = useCallback(() => {
     storage.signOut();
     setUserState(null);
+    setPathsState([]);
   }, []);
+
+  // Sync real learning paths from backend if user has a real session
+  useEffect(() => {
+    let cancelled = false;
+    async function syncBackend() {
+      if (!user || user.isDemo) return;
+      try {
+        const { pathsService, backendPathToFrontend } = await import('../services/backendService');
+        const summaries = await pathsService.list();
+        if (cancelled) return;
+        if (summaries && summaries.length > 0) {
+          const fullPaths = await Promise.all(
+            summaries.map(s => pathsService.get(s.id).then(backendPathToFrontend))
+          );
+          if (cancelled) return;
+          setPathsState(fullPaths);
+          storage.saveLearningPaths(fullPaths, user.email);
+        } else if (summaries && summaries.length === 0) {
+          setPathsState([]);
+          storage.saveLearningPaths([], user.email);
+        }
+      } catch {
+        // Backend unavailable — keep local state
+      }
+    }
+    syncBackend();
+    return () => { cancelled = true; };
+  }, [user?.email, user?.isDemo]);
 
   return (
     <AppContext.Provider value={{

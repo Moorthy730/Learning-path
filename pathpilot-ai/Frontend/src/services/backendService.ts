@@ -76,6 +76,7 @@ export interface BackendPathSummary {
 export interface BackendProgress {
   path_id: string;
   total_modules: number;
+  completed_modules: number;
   total_lessons: number;
   completed_lessons: number;
   remaining_lessons: number;
@@ -140,7 +141,7 @@ export function backendPathToFrontend(bp: BackendLearningPath): LearningPath {
         id: mod.id,
         title: mod.title,
         description: mod.description,
-        completed: mod.lessons.every((l) => l.completed),
+        completed: mod.lessons.length > 0 && mod.lessons.every((l) => l.completed),
         expanded: false,
         lessons: mod.lessons.map((l) => {
           const resUrl = l.resource_url || `https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(l.title)}`;
